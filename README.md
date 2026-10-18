@@ -1,6 +1,6 @@
 # InsightFlow
 
-AI 用户反馈洞察与需求管理交互演示，内置虚构 chatagent 产品的合成反馈。
+AI 用户反馈洞察与需求管理交互演示，内置虚构 chatagent 产品的 204 条合成反馈。
 
 在线体验（启用 Pages 后）：https://viorchas.github.io/insightflow/
 

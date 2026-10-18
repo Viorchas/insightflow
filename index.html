@@ -263,7 +263,218 @@ function escapeCsvCell(value         )         {
 
 return {parseCsv,validateRows,escapeCsvCell};
 })();
+__modules["seed-expansion.mjs"] = (()=>{
+// Curated synthetic scenarios. Prefixes: + positive, ~ neutral, otherwise negative.
+// These are fictional feedback examples, not quotations or research findings.
+const expandedScenarios = {
+  coding: [
+    '修改一个按钮样式时把整个页面重写了，希望严格限制修改范围。',
+    '执行终端命令前没有说明用途，担心误删项目文件。',
+    '修复类型报错时直接删除了类型定义，问题只是被隐藏了。',
+    '代码差异里混入大量格式变更，很难找到真正的逻辑修改。',
+    'Agent 不读取仓库规范就开始修改，生成的代码风格不一致。',
+    '工具调用失败后反复执行同一个命令，没有尝试解释原因。',
+    '重构时漏改了调用位置，运行后才发现导入路径错误。',
+    '生成的测试只验证固定返回值，没有覆盖实际异常分支。',
+    '没征得同意就新增依赖，导致原来的构建环境不兼容。',
+    '只想调整提示文案，却连接口请求逻辑都被改掉了。',
+    '应用修改后无法区分我的未提交代码和 Agent 写的代码。',
+    '仓库有多个子项目，Agent 经常在错误目录安装依赖。',
+    '撤销上一轮修改时连我手动写的内容一起还原了。',
+    '修改数据库字段后没有提醒补迁移文件，部署时失败了。',
+    '工具权限被拒绝后界面没有解释，任务一直停在运行中。',
+    'Agent 说测试通过，但实际没有执行测试命令。',
+    '自动修复删除了有意保留的注释，影响后续维护。',
+    '同一文件被连续改了几轮，最终差异里看不清每轮改动。',
+    '~希望能只接受差异中的一部分代码，不必整轮全部应用。',
+    '~希望运行危险命令前显示工作目录和完整操作说明。',
+    '~希望任务完成后列出修改文件、验证结果和未完成事项。',
+    '~希望支持为特定目录设置只读，避免改动已有公共组件。',
+    '~希望可以给 Agent 指定一组文件作为本轮修改边界。',
+    '~希望修改依赖版本之前先列出兼容性影响。',
+    '~希望能从选中的代码片段直接发起解释或重构任务。',
+    '+逐文件差异预览很直观，核查后再应用更有把握。',
+    '+这次修复保留了原有接口，项目能继续正常构建。',
+    '+终端命令附带解释后，能理解 Agent 为什么这样排查。',
+    '+能指出修改还没验证的部分，让我知道下一步要检查什么。',
+    '+按照仓库规范生成组件，接入现有项目比较顺畅。',
+  ],
+  context: [
+    '前面指定用 TypeScript，聊到后面又开始给 JavaScript 示例。',
+    '已经说过不引入新依赖，下一轮还是建议安装新的包。',
+    '上传的需求文档在对话变长后像是没有被继续参考。',
+    '换到另一个模型后，之前确认的产品范围丢失了。',
+    '让它在原方案上补异常处理，结果重新写了一个无关方案。',
+    '同一会话里把两个项目的目录和配置混在了一起。',
+    '压缩上下文后忘记了我明确排除的功能。',
+    '纠正过的字段名称在后续回答里又恢复成错误写法。',
+    '多轮改稿后不知道当前哪一版是最终确认版本。',
+    '要求只输出中文，长对话后又切回英文说明。',
+    '引用早期消息时漏掉了条件，得出的结论和原意不同。',
+    '复制会话后附件没有一起保留，继续提问时无法参考。',
+    '在同一个项目里开新对话，公共背景需要重新说明。',
+    '模型记住了已经作废的需求，却漏掉了最新修正。',
+    '切换设备继续对话后，最近几轮指令没有衔接上。',
+    '对话过长时没有提醒，突然就无法继续处理已有材料。',
+    '明确说是在补充旧任务，却被当成新的独立需求。',
+    '项目背景更新以后，旧的默认假设仍然影响回答。',
+    '~希望能把已确认的需求固定在会话顶部供模型参考。',
+    '~希望查看当前对话正在使用哪些文件和背景信息。',
+    '~希望能手动删除错误记忆，而不必清空整个项目。',
+    '~希望会话摘要可以编辑，避免压缩时误解需求。',
+    '~希望切换模型前提示哪些上下文会被保留。',
+    '~希望能把某条消息标成已废弃，后续不再引用。',
+    '~希望项目级偏好和本轮临时要求能分别管理。',
+    '+这次继续写需求时沿用了前面确认的范围，没有重复解释。',
+    '+长对话里还能保持表格字段一致，整理材料方便了。',
+    '+项目背景摘要能帮助我快速接回中断的工作。',
+    '+纠正一次命名后，后续生成的内容都保持一致。',
+    '+新一轮回答能明确引用前面确认过的约束。',
+  ],
+  quality: [
+    '回答引用了一篇搜不到的论文，希望不要虚构文献。',
+    '给出的库函数属于旧版本，却没有说明版本差异。',
+    '遇到查不到的信息也给出确定结论，很难判断可信程度。',
+    '同一份材料总结出的总数和原表格对不上。',
+    '链接能打开，但页面内容并不支持回答中的结论。',
+    '引用原文时改变了限定条件，容易产生误解。',
+    '把自己的推测写成资料已经证实的事实。',
+    '回答里提到最新政策，却没有提供发布日期和来源。',
+    '代码解释中说某个方法会返回数组，实际返回的是对象。',
+    '要求只根据附件回答，结果加入了附件之外的假设。',
+    '对明显缺少信息的问题直接给方案，没有说明缺少什么。',
+    '两段回答对同一个概念的定义相互冲突。',
+    '提供的命令参数在官方工具里不存在。',
+    '举例中的数字看起来像真实业绩，但没有标注是示例。',
+    '检索结果混入无关内容，答案仍把它作为主要证据。',
+    '发现错误后只改了一句话，后面的推导没有一起修正。',
+    '来源显示为官网，点开却是其他网站的转载。',
+    '摘要遗漏了文档里的风险条件，让结论显得过于乐观。',
+    '~希望每个关键结论都能点开对应的原文证据。',
+    '~希望区分已检索信息、模型推测和待确认事项。',
+    '~希望引用资料时同时展示标题、时间和来源网站。',
+    '~希望能对某一句回答单独标记错误并提交反馈。',
+    '~希望回答不确定时给出需要补充的材料清单。',
+    '~希望涉及软件用法时优先参考对应版本的官方文档。',
+    '~希望修改结论后能说明哪些后续判断也需要更新。',
+    '+遇到缺少依据的问题会说明不确定，没有硬编答案。',
+    '+引用链接和结论能对应起来，核查过程比较清楚。',
+    '+能把资料原文和自己的解释区分开，读起来更放心。',
+    '+指出了我的前提有问题，并给出可核查的解释。',
+    '+回答保留了文档中的限制条件，没有过度推广结论。',
+  ],
+  speed: [
+    '发出消息后一直转圈，不知道请求是否已经提交。',
+    '排队时没有明确状态，重复点击后出现多条一样的请求。',
+    '生成长回答时断流，已有内容也跟着消失了。',
+    '点击停止后仍继续输出很久，看不出是否生效。',
+    '任务超过预期时间却没有超时提示。',
+    '网络恢复后无法继续上一条请求，只能重新发送。',
+    '任务失败只显示重试，没说明是否已经消耗额度。',
+    '思考和工具运行共用一个动画，无法判断卡在哪一步。',
+    '切到其他页面后回来，任务进度又从零开始显示。',
+    '浏览器刷新后看不到刚才执行到哪一步。',
+    '任务列表显示完成，点开却没有任何结果。',
+    '较长的代码块输出时页面滚动明显卡顿。',
+    '同时打开几个会话后，输入框响应变慢。',
+    '服务繁忙时没有排队说明，容易误以为软件坏了。',
+    '失败任务重新运行后，旧任务状态没有更新。',
+    '附件处理和回答生成混在一起，等待原因不清楚。',
+    '退出任务页面后不知道后台是否还在继续运行。',
+    '重试按钮连续点击会同时启动多轮重复任务。',
+    '~希望区分排队、处理中、需要输入和已失败几种状态。',
+    '~希望只重试失败步骤，不必重复已经完成的部分。',
+    '~希望长任务可以先返回阶段性结果。',
+    '~希望能取消队列中尚未开始的请求。',
+    '~希望显示实际完成步骤，不要用一直跳动的假进度。',
+    '~希望任务中断后说明已保存和未保存的内容。',
+    '~希望后台忙碌时允许继续编辑下一条消息。',
+    '+状态提示能看出是在检索还是生成，等待更容易理解。',
+    '+停止操作后界面及时显示已停止，没有继续追加内容。',
+    '+断网后保留了已生成的回答，可以先复制保存。',
+    '+长回答的流式输出比较平稳，阅读时没有明显跳动。',
+    '+失败原因写得清楚，知道应该修改输入还是稍后重试。',
+  ],
+  files: [
+    '上传较大的 PDF 时失败，却没有说明文件大小限制。',
+    '扫描文档被当成空白文件，缺少识别能力的提示。',
+    '表格中合并单元格识别后错位，回答引用了错误数值。',
+    '图片中的中文小字识别错误，没有提示识别可能不准。',
+    '文件名相同的两个附件无法分清当前在引用哪一个。',
+    '删除附件后，回答仍使用旧附件中的内容。',
+    '上传新版文档后没有重新解析，结果还是旧版本。',
+    '回答提到第十页，但原文件那一页没有对应内容。',
+    '加密文件无法读取，界面只显示通用错误。',
+    '上传格式不支持时要等很久才知道失败。',
+    '一个附件解析失败，其他正常附件也不能继续使用。',
+    '多表工作簿只读取了第一张表，却没有告知遗漏。',
+    '文档中的脚注被当成正文，导致总结出现重复内容。',
+    '含中英文混排的 PDF 段落顺序识别错误。',
+    'CSV 的编码不兼容时显示乱码，缺少修正建议。',
+    '文件上传成功和解析完成没有区分，提问时内容还没准备好。',
+    '引用截图时无法定位到图片中的具体区域。',
+    '附件太多时找不到当前回答使用的那份材料。',
+    '~希望解析前能预览文件名、页数和支持的处理方式。',
+    '~希望回答引用文件时附上页码和连续原文片段。',
+    '~希望表格分析前让我确认字段识别结果。',
+    '~希望可以只选择文档中的某几页进行分析。',
+    '~希望失败附件可以单独重传，不影响其他文件。',
+    '~希望对识别不清的段落明确标注并允许手动修正。',
+    '~希望能查看附件解析的进度和失败原因。',
+    '+能从回答跳到附件对应页码，核对材料比较方便。',
+    '+解析前的表格预览帮助我发现了列识别错误。',
+    '+不支持的附件会立即提示格式要求，省去等待。',
+    '+同一轮可以对照多份文件，来源标识也比较清楚。',
+    '+识别不清的图片文字会提示需人工核对，没有假装准确。',
+  ],
+  quota: [
+    '剩余次数显示没有及时更新，不知道还能不能继续运行。',
+    '失败请求也扣了额度，但页面没有给出相关说明。',
+    '切换模型后消耗规则改变，界面没有提前提示。',
+    '长任务开始前无法判断大概会消耗多少额度。',
+    '额度不足只在任务结束时提示，之前的结果也没有保存。',
+    '同一个任务重试多次后，很难核对每次消耗。',
+    '免费次数和付费余额混在一起，看不懂使用顺序。',
+    '显示今天额度已用完，却没有说明什么时候恢复。',
+    '取消任务后是否还会计费没有解释。',
+    '余额不足的报错和网络失败一样，容易反复重试。',
+    '工具调用与普通对话的计费方式不一致，说明不够清楚。',
+    '看不到某个 Agent 任务累计用了多少额度。',
+    '额度页面和任务页面的消耗记录对不上。',
+    '超时后提示重新发送，没有提醒可能再次计费。',
+    '接近限额时没有提醒，重要任务运行到一半被终止。',
+    '模型名称相似，无法判断哪一个会使用更多额度。',
+    '共享链接中的演示任务也触发计费，缺少明确确认。',
+    '失败步骤自动重试，用户不知道还在持续消耗额度。',
+    '~希望设置单次任务的最大消耗上限。',
+    '~希望开启真实模型前先显示费用提醒并由我确认。',
+    '~希望额度不足时保留已完成结果，补足后继续。',
+    '~希望使用记录能按会话和任务分别查看。',
+    '~希望接近每日限额时可以选择停止后续任务。',
+    '~希望明确区分免费模拟、真实模型和缓存结果。',
+    '~希望超时重试前能查询上一次请求是否已完成。',
+    '+真实调用前有清楚的确认提示，不容易误触消耗。',
+    '+消耗记录能对应到具体任务，核对起来更方便。',
+    '+额度不足时会保留当前进度，不用从头开始。',
+    '+免费演示模式有明显标识，体验时不用担心产生费用。',
+    '+取消后会说明当前请求可能已计费，信息比较透明。',
+  ],
+};
+
+function makeExpandedRows() {
+  return Object.entries(expandedScenarios).flatMap(([topicId,items])=>items.map((raw,index)=>{
+    const sentiment=raw.startsWith('+')?'positive':raw.startsWith('~')?'neutral':'negative';
+    const content=raw.replace(/^[+~]/,'');
+    const issueType=sentiment==='neutral'?'feature_request':topicId==='speed'?'performance':/错误|失败|不存在|错位|丢失|断流|不一致/.test(content)?'bug':'usability';
+    const review=['files','quota'].includes(topicId)?'pending':index%4===0?'pending':index%7===0?'modified':'confirmed';
+    return [content,topicId,sentiment,issueType,review,['Web','Windows','macOS','Android','iOS'][(index+Object.keys(expandedScenarios).indexOf(topicId))%5]];
+  }));
+}
+
+return {expandedScenarios,makeExpandedRows};
+})();
 __modules["demo-model.mjs"] = (()=>{
+const { makeExpandedRows } = __modules["seed-expansion.mjs"];
 const STORAGE_KEY = 'insightflow-demo-v1';
 const SCHEMA_VERSION = 1;
 const uid = () => crypto.randomUUID();
@@ -304,10 +515,10 @@ function initialState() {
     { id: 'files', name: '文件理解与证据定位', status: 'candidate', description: 'PDF 与表格识别、上传错误、页码引用及原文证据' },
     { id: 'quota', name: '使用额度与消耗透明', status: 'candidate', description: '额度显示、消耗规则、运行前提醒与进度保留' },
   ];
-  const feedback = rows.map((r, i) => ({ id: uid(), content: r[0], topicId: r[1], sentiment: r[2], issueType: r[3], review: r[4], platform: r[5], source: ['产品内反馈', '开发者社区', '用户访谈', 'App 商店'][i % 4], date: `2026-10-${String(6 + Math.floor(i / 2)).padStart(2, '0')}`, origin: '示例预设', analysisStatus: 'succeeded', revision: 0, history: [], keys: [] }));
+  const feedback = [...rows, ...makeExpandedRows()].map((r, i) => ({ seedId: `chatagent-feedback-${i + 1}`, id: uid(), content: r[0], topicId: r[1], sentiment: r[2], issueType: r[3], review: r[4], platform: r[5], source: ['产品内反馈', '开发者社区', '用户访谈', 'App 商店'][i % 4], date: i < rows.length ? `2026-10-${String(6 + Math.floor(i / 2)).padStart(2, '0')}` : new Date(Date.UTC(2026, 8, 20 + (i - rows.length) % 30)).toISOString().slice(0, 10), origin: '示例预设', analysisStatus: 'succeeded', revision: 0, history: [], keys: [] }));
   const source = feedback.find(f => f.topicId === 'coding' && f.review === 'confirmed');
   const req = { id: uid(), title: 'Agent 应用代码修改前支持逐文件差异确认', description: '用户需要先核查修改范围再应用代码。建议展示逐文件差异、允许取消本轮操作，并保留来源反馈用于后续验证。此条为合成数据示例，尚无真实价值或效果结论。', priority: 'medium', status: 'pending', sources: [snapshot(source, topics)], createdAt: '2026-10-15T08:00:00.000Z', revision: 0 };
-  return { version: SCHEMA_VERSION, activeProjectId: projectId, projects: [{ id: projectId, name: 'chatagent', appName: 'chatagent · AI 工作台', description: '虚构的通用对话与 Agent 编程平台，覆盖资料问答、文件理解与代码修改场景', seedKey: 'chatagent-v1', topics, feedback, requirements: [req], imports: [], isSample: true }] };
+  return { version: SCHEMA_VERSION, activeProjectId: projectId, projects: [{ id: projectId, name: 'chatagent', appName: 'chatagent · AI 工作台', description: '虚构的通用对话与 Agent 编程平台，覆盖资料问答、文件理解与代码修改场景', seedKey: 'chatagent-v1', sampleRevision: 2, topics, feedback, requirements: [req], imports: [], isSample: true }] };
 }
 
 function projectOf(state) {
@@ -376,6 +587,19 @@ function loadState(storage) {
     const sample = projectOf(initialState());
     data.projects.unshift(sample);
     if (active.isSample) data.activeProjectId = sample.id;
+  }
+  // Append new samples once, keeping prior reviews, requirements and imports intact.
+  for (const project of data.projects.filter(p => p.seedKey === 'chatagent-v1' && p.isSample && (p.sampleRevision || 1) < 2)) {
+    const additions = projectOf(initialState()).feedback.slice(rows.length);
+    const existingIds = new Set(project.feedback.map(f => f.seedId).filter(Boolean));
+    const existingContent = new Set(project.feedback.map(f => f.content));
+    for (const feedback of additions) {
+      const topic = project.topics.find(t => t.id === feedback.topicId);
+      if (!topic || existingIds.has(feedback.seedId) || existingContent.has(feedback.content)) continue;
+      if (topic.status !== 'confirmed') feedback.review = 'pending';
+      project.feedback.push(feedback);
+    }
+    project.sampleRevision = 2;
   }
   return data;
 }
