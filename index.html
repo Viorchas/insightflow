@@ -684,7 +684,7 @@ function validateBackup(data) {
       if(!b||!id(b.id)||!text(b.fileName,1,255)||!Number.isFinite(Date.parse(b.createdAt))||['total','imported','invalid','skipped'].some(k=>!Number.isInteger(b[k])||b[k]<0)||b.total!==b.imported+b.invalid+b.skipped)fail();
       if(b.rows!==undefined&&(!Array.isArray(b.rows)||b.rows.length>2000||b.rows.some(r=>!r||!Number.isInteger(r.recordNo)||r.recordNo<2||!['new','duplicate','invalid','empty'].includes(r.outcome)||!Array.isArray(r.errors)||r.errors.some(e=>!text(e,0,500)))))fail();
     }
-    if(p.analysisRuns!==undefined){if(!Array.isArray(p.analysisRuns)||p.analysisRuns.length>50)fail();for(const run of p.analysisRuns){if(!id(run.id)||!Array.isArray(run.items)||run.items.length>10||!['running','completed','partial_failed','interrupted','stopped'].includes(run.status)||run.items.some(i=>!id(i.id)||!p.feedback.some(f=>f.id===i.id)||!['queued','running','succeeded','failed','unknown','not_started'].includes(i.status)))fail();}}
+    if(p.analysisRuns!==undefined){if(!Array.isArray(p.analysisRuns)||p.analysisRuns.length>50)fail();for(const run of p.analysisRuns){if(!id(run.id)||!Array.isArray(run.items)||run.items.length>10||!['running','completed','partial_failed','failed','interrupted','stopped'].includes(run.status)||run.items.some(i=>!id(i.id)||!p.feedback.some(f=>f.id===i.id)||!['queued','running','succeeded','failed','unknown','not_started'].includes(i.status)))fail();}}
   }
   return structuredClone(data);
 }
@@ -749,7 +749,7 @@ function createPanels({getState,setState,commit,openModal,modal,esc,btn,tag,rend
       }catch(e){formError(e);}
     });
   }
-  const runLabels={running:'处理中',completed:'已完成',partial_failed:'部分失败',interrupted:'已中断',stopped:'已停止'};
+  const runLabels={running:'处理中',completed:'已完成',partial_failed:'部分失败',failed:'全部失败',interrupted:'已中断',stopped:'已停止'};
   const itemLabels={queued:'未开始',running:'请求中',succeeded:'已保存结果',failed:'失败',unknown:'结果未知（可能已计费）',not_started:'未发送'};
   function analysisHistory(){
     const runs=projectOf(getState()).analysisRuns||[];
@@ -866,7 +866,7 @@ async function runRealAi() {
       const progress=$('#real-progress');if(progress)progress.textContent=`成功 ${run.done} 条 · 失败 ${run.failed} 条 · 总计 ${run.items.length} 条`;
       render();
     }
-    commit((_p,s)=>{const log=s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId);log.status=run.stop?'stopped':run.failed?'partial_failed':'completed';log.completedAt=new Date().toISOString();for(const i of log.items)if(i.status==='queued')i.status='not_started';});
+    commit((_p,s)=>{const log=s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId);log.status=run.stop?'stopped':run.failed?(run.done?'partial_failed':'failed'):'completed';log.completedAt=new Date().toISOString();for(const i of log.items)if(i.status==='queued')i.status='not_started';});
     const text=`真实分析${run.stop?'已停止':'结束'}：成功 ${run.done} 条，失败 ${run.failed} 条，未处理 ${run.items.length-run.done-run.failed} 条。`;
     const progress=$('#real-progress');if(progress)progress.textContent=text;
     toast(text);
@@ -966,7 +966,7 @@ function openModal(title, body, wide=false) {
   modal.innerHTML = `<div class="modal-header"><h2 id="modal-title">${title}</h2><button class="close" data-action="close" aria-label="关闭">×</button></div><div class="modal-content">${body}<p id="form-error" class="form-error" role="alert"></p></div>`;
   if (!modal.open) modal.showModal();
 }
-function formError(e) { const box=$('#form-error',modal); if(box) box.textContent=e.message; else toast(e.message); }
+function formError(e) { const box=modal.open && $('#form-error',modal); if(box) box.textContent=e.message; else toast(e.message); }
 function attempt(fn) { try { fn(); } catch(e) { formError(e); } }
 function updateFilter(key,value) { const {name,params}=route();value ? params.set(key,value):params.delete(key);if(params.get('from')&&params.get('to')&&params.get('from')>params.get('to')){toast('起始日期不能晚于结束日期。');render();return;}selected.clear(); page=1; location.hash=`${name}?${params}`; render(); }
 
@@ -1061,7 +1061,17 @@ document.addEventListener('click',e=>{
     else if(action==='restore-backup')panels.restore();
     else if(action==='batch-confirm'){
       if(!selected.size||selected.size>200)throw new Error('请选择 1—200 条待审核反馈。');
-      const ids=[...selected];commit(p=>{for(const id of ids){const f=p.feedback.find(f=>f.id===id);if(!f||f.review!=='pending'||f.analysisStatus!=='succeeded')throw new Error('选择中含非待审核或未分析反馈，请重新选择。');reviewFeedback(p,id,f.revision,'confirmed');}});selected.clear();render();toast('所选反馈已确认。');
+      const ids=[...selected], feedback=ids.map(id=>p.feedback.find(f=>f.id===id));
+      if(feedback.some(f=>!f||f.review!=='pending'||f.analysisStatus!=='succeeded'))throw new Error('选择中含非待审核或未分析反馈，请筛选“待审核”后重新选择。');
+      if(new Set(feedback.map(f=>f.topicId)).size!==1)throw new Error('批量确认仅支持同一主题。请先按主题筛选，再选择待审核反馈。');
+      const topic=p.topics.find(t=>t.id===feedback[0].topicId);
+      if(!topic||topic.status!=='confirmed')throw new Error('请先在主题页确认候选主题；已归档主题不能批量审核。');
+      const revisions=new Map(feedback.map(f=>[f.id,f.revision]));
+      openModal('确认批量审核',`<p>将确认主题「${esc(topic.name)}」下的 ${ids.length} 条反馈。请核查每条原文；确认后记录人工审核结果。</p><div class="source-list">${feedback.map(f=>`<div><p>${esc(f.content)}</p>${tag(labels[f.sentiment])}</div>`).join('')}</div><div class="form-actions">${btn('close','取消','secondary')}<button id="confirm-batch-review" class="btn primary">确认这 ${ids.length} 条反馈</button></div>`,true);
+      $('#confirm-batch-review').addEventListener('click',()=>attempt(()=>{
+        commit(p=>{for(const id of ids){const f=p.feedback.find(f=>f.id===id);if(!f||f.review!=='pending'||f.topicId!==topic.id)throw new Error('反馈已变化，请重新选择并核查。');reviewFeedback(p,id,revisions.get(id),'confirmed');}});
+        selected.clear();modal.close();render();toast('所选反馈已确认。');
+      }));
     }
     else if(action==='reject-feedback'){commit(p=>reviewFeedback(p,id,Number(b.dataset.revision),'rejected'));modal.close();render();toast('已拒绝分类，原文保留。');}
     else if(action==='new-requirement'){go('feedback');toast('请勾选来源反馈，再点击“转为需求”。');}
