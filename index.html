@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="InsightFlow：从用户反馈到产品需求。无需登录的交互演示，使用明确标记的示例与模拟分析。">
+  <title>InsightFlow · 让每一条反馈，有迹可循</title>
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTIiIGZpbGw9IiNiOWVkOGIiLz48cGF0aCBkPSJNMTEgMTJoOHY3aDEwdjlIMTF6IiBmaWxsPSIjMjAzNTJiIi8+PHBhdGggZD0iTTI0IDEwaDV2NWgtNXoiIGZpbGw9IiMyMDM1MmIiLz48L3N2Zz4K" type="image/svg+xml">
+  <style>:root{font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#263b35;background:#f6f8f7;font-synthesis:none;--green:#2b5947;--muted:#809089;--border:#e5ebe7;--sidebar:#172e29}
+*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button,a,select,input{ -webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.4}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a7ca77;outline-offset:3px}button{color:inherit}.icon{width:19px;height:19px;flex-shrink:0;vertical-align:middle}button .icon{width:16px;height:16px}.sidebar{width:238px;background:var(--sidebar);color:#d7e3dc;position:fixed;inset:0 auto 0 0;padding:31px 20px 20px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:650;letter-spacing:-.7px;color:#fff;margin-bottom:43px}.brand span{font-size:15px;color:#a6c99e;margin-left:auto}.workspace-label{font-size:11px;color:#9bb0a7;display:flex;justify-content:space-between;margin:0 7px 11px;letter-spacing:.6px}.workspace-label span{font-size:9px;letter-spacing:1.3px;color:#6b8a7b}.project-select{display:flex;align-items:center;gap:10px;background:#233d34;border:1px solid #365044;border-radius:8px;padding:11px 9px;margin-bottom:31px}.project-icon{display:grid;place-items:center;background:#516c55;color:#e2eacc;width:29px;height:29px;border-radius:6px;font-size:13px}.project-select select{background:none;border:0;color:#eef2eb;width:120px;appearance:none;outline:none;cursor:pointer}.project-select select option{color:#263b35;background:white}.project-select .icon{width:14px;color:#a8bbaf}nav{display:flex;flex-direction:column;gap:7px}.nav-item{padding:13px 12px;display:flex;align-items:center;gap:12px;font-size:13px;border-radius:7px;color:#b9ccc1}.nav-item.active{background:#d9efbd;color:#263e2c;font-weight:600}.nav-item.active .icon{stroke-width:1.9}.nav-item small{margin-left:auto;font-size:11px;opacity:.7}.nav-item:not(.active):hover{background:#294438}.new-project{display:flex;align-items:center;gap:10px;color:#91aa9c;background:none;border:0;border-top:1px solid #2e473c;padding:19px 10px;margin-top:24px;font-size:12px}.sidebar-bottom{margin-top:auto}.demo-card{background:#223c32;border:1px solid #355044;border-radius:8px;padding:15px;font-size:12px;line-height:1.8;margin-top:25px}.live-dot{display:inline-block;width:6px;height:6px;background:#b7e68e;border-radius:50%;margin-right:4px}.demo-card p{font-size:11px;color:#99b0a1;margin:8px 0}.demo-card .btn.text{color:#c9dfbd;padding:0;font-size:11px}.profile{display:flex;align-items:center;gap:10px;border-top:1px solid #32483e;margin-top:22px;padding:20px 2px 0;font-size:12px}.avatar{background:#d5e5d1;color:#39523a;display:grid;place-items:center;width:33px;height:33px;border-radius:50%;font-weight:600}.profile small{display:block;margin-top:4px;font-size:10px;color:#8ba495}.main{margin-left:238px}.topbar{height:76px;border-bottom:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 40px;font-size:12px}.breadcrumb{color:#8e9b94}.slash{margin:0 13px;color:#c2ccc5}.topbar strong{font-weight:500}.top-actions{display:flex;align-items:center;gap:22px}.local-note{font-size:11px;color:#89968e;display:flex;align-items:center;gap:7px}.local-note i{width:5px;height:5px;border-radius:50%;background:#93b696}.content{max-width:1460px;margin:auto;padding:35px 40px 15px}.page-heading{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:27px}.eyebrow{font-size:10px;color:#82988a;letter-spacing:1px}.eyebrow span{margin:0 8px;color:#b5c4b9}h1{font-size:29px;letter-spacing:-.8px;font-weight:600;margin:12px 0 10px;line-height:1.45}.page-heading p{font-size:12px;color:#8a978f;margin:0;line-height:1.8}.btn{border:1px solid transparent;border-radius:6px;min-height:36px;padding:8px 14px;display:inline-flex;gap:8px;justify-content:center;align-items:center;font-size:12px;font-weight:500;white-space:nowrap;transition:background .15s,transform .15s}.btn.primary{background:#2b5745;color:#fff;box-shadow:0 2px 3px #18302512}.btn.primary:hover{background:#204633}.btn.secondary{background:#fff;border-color:#dfe6df;color:#4d6656}.btn.secondary:hover{background:#f2f6ee}.btn.text{background:none;color:#708671;padding:5px 0;min-height:26px}.btn.wide{width:100%}.btn.danger{color:#b46d5a}.demo-banner{background:#edf3e8;border:1px solid #dee9d4;border-radius:7px;display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:11px;color:#819077;line-height:1.7;margin-bottom:22px}.demo-banner strong{color:#4e6d47;font-weight:500;margin-right:8px}.demo-banner .btn{margin-left:auto;color:#6a805d;font-size:10px}.banner-symbol{background:#dceace;display:grid;place-items:center;width:29px;height:29px;flex-shrink:0;border-radius:7px;color:#628150}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:17px;margin-bottom:30px}.stat{background:#fff;border:1px solid var(--border);border-radius:9px;padding:20px 20px 17px;box-shadow:0 3px 9px #1e392803}.stat-label{display:flex;align-items:center;justify-content:space-between;color:#809087;font-size:12px}.stat-label .icon{color:#a2b2a8;width:18px;height:18px}.stat strong{display:block;font-size:35px;font-weight:550;letter-spacing:-1px;margin:12px 0 11px;line-height:1}.stat strong span{font-size:11px;margin-left:7px;font-weight:400;color:#9ba79f;letter-spacing:0}.stat small{font-size:10px;color:#9ca69f}.section-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.section-title{font-size:14px;font-weight:600}.section-title span{font-size:9px;letter-spacing:1.7px;color:#a1afa5;font-weight:400;margin-left:9px}.segmented{display:flex;background:#eaf0eb;padding:3px;border-radius:6px}.segmented button{border:none;background:none;border-radius:4px;font-size:10px;padding:7px 11px;color:#8b9a8f}.segmented button.selected{background:#fff;color:#4c684f;box-shadow:0 1px 4px #33432c12}.analytics-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;margin-bottom:20px}.panel{background:#fff;border:1px solid var(--border);border-radius:9px;overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:flex-start;padding:21px 22px 10px;gap:10px}.panel-head h2{font-size:14px;margin:0 0 7px;font-weight:600;letter-spacing:.1px}.panel-head p{font-size:10px;color:#9aa79d;margin:0;line-height:1.7}.panel-head>.icon{color:#a9b7ac;width:17px}.link{border:0;background:none;color:#84947f;font-size:10px;display:inline-flex;align-items:center;gap:6px;padding:0}.link .icon{width:13px;height:13px}.topic-bars{padding:5px 23px 22px}.topic-bar-row{border:0;background:none;width:100%;display:flex;gap:14px;align-items:center;padding:13px 0 3px;text-align:left}.rank{font-size:10px;color:#a6b4a8;align-self:flex-start;padding-top:2px;font-variant-numeric:tabular-nums}.bar-body{flex:1}.bar-title{display:flex;justify-content:space-between;font-size:11px;margin-bottom:10px}.bar-title strong{font-size:12px;font-weight:500}.bar-title small{font-size:9px;font-weight:400;color:#a2ada4}.bar-title b{font-size:10px;font-weight:400;color:#9aa89c;margin-left:18px;display:inline-block;width:25px;text-align:right}.bar-title em{font-style:normal;font-size:9px;color:#b7a274;background:#f9f5e8;padding:2px 4px;margin-left:6px;border-radius:3px}.bar-track{height:8px;background:#f3f6f2;border-radius:2px;overflow:hidden}.bar-track i{display:block;height:100%;border-radius:2px;background:var(--bar);transition:width .4s}.topic-bar-row:hover .bar-title{color:#477848}.sentiment-body{padding:20px 22px 25px;display:flex;align-items:center;gap:28px;min-height:227px}.donut{width:174px;height:174px;flex-shrink:0;border-radius:50%;background:conic-gradient(#dfb09b 0 var(--negative),#dce8da var(--negative) 100%);display:grid;place-items:center;transform:rotate(-90deg)}.donut>div{width:133px;height:133px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(90deg)}.donut strong{font-size:30px;font-weight:550;letter-spacing:-.7px}.donut span{font-size:10px;margin-top:7px;color:#a1aba2}.legend{flex:1;display:flex;flex-direction:column;gap:17px;min-width:75px}.legend span{display:flex;align-items:center;font-size:10px;color:#8e9b91;gap:7px}.legend i{width:7px;height:7px;border-radius:2px}.legend b{margin-left:auto;font-weight:500;color:#506753}.bottom-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}.histogram{height:190px;display:flex;padding:12px 23px 15px;gap:15px;align-items:stretch}.hist-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:9px;color:#a7b2a9}.hist-col>span{font-size:9px}.hist-track{flex:1;width:100%;display:flex;align-items:flex-end;border-bottom:1px solid #e7ede6;background:repeating-linear-gradient(to top,transparent 0,transparent 29px,#f1f4f0 30px,transparent 31px)}.hist-track i{width:65%;min-height:2px;margin:0 auto;background:#bfd5bc;border-radius:3px 3px 0 0}.hist-col:last-child .hist-track i{background:#628b65}.hist-col small{font-size:9px}.subtle{font-size:11px;color:#95a297}.next-step{padding-bottom:19px}.next-step>.btn{width:calc(100% - 44px);margin:0 22px}.steps{padding:8px 22px 15px}.steps>div{display:flex;align-items:center;gap:12px;margin:13px 0}.steps b{width:27px;height:27px;border-radius:50%;border:1px solid #e0e8dc;background:#f7faf4;color:#a0af96;font-size:9px;font-weight:500;display:grid;place-items:center}.steps b.step-done{background:#e7f0de;border-color:#dce8d1;color:#77966c}.steps b .icon{width:13px;height:13px}.steps span{font-size:11px}.steps small{font-size:9px;color:#a2afa1;display:block;margin-top:5px}footer{margin-top:31px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:9px;color:#a0ada3}footer b{margin:0 7px;font-weight:400}footer .link{font-size:9px}.filterbar{display:flex;gap:10px;margin-bottom:19px}.search{display:flex;align-items:center;gap:9px;background:white;border:1px solid var(--border);border-radius:6px;padding:0 13px;flex:1;min-width:180px}.search .icon{width:17px;color:#9aaa9e}.search input{border:none;outline:none;background:none;width:100%;font-size:12px;padding:11px 0;color:#405b49}.filterbar>select{border:1px solid var(--border);background:white;padding:9px 11px;border-radius:6px;font-size:11px;color:#647d6a;max-width:170px}.selection-bar{display:flex;justify-content:space-between;align-items:center;gap:15px;font-size:11px;color:#899c8c;margin:0 0 13px}.selection-bar>div{display:flex;gap:12px}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}th{font-size:10px;font-weight:400;background:#f9fbf8;color:#8e9d91;padding:14px 16px;border-bottom:1px solid var(--border);white-space:nowrap}td{padding:19px 16px;border-bottom:1px solid #edf1eb;vertical-align:middle;line-height:1.8}td:first-child:has(input){width:30px;padding-right:0}.check-cell{width:30px}input[type=checkbox]{accent-color:#3c704b;width:14px;height:14px;flex-shrink:0}.feedback-content{min-width:250px;max-width:510px}.feedback-content button{display:block;border:0;background:none;text-align:left;padding:0;color:#465f4d;font-size:12px;line-height:1.9}.feedback-content button:hover{color:#1f6a3d}.feedback-content small{display:block;color:#a3aea3;font-size:9px;margin-top:9px}.feedback-content small span{margin:0 5px}.tag{display:inline-block;white-space:nowrap;border:1px solid #e7ece6;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:400;color:#81937c;background:#f7faf4;line-height:1.65}.tag.green,.tag.positive{background:#edf4ea;border-color:#e1ebdc;color:#688b60}.tag.amber{background:#fcf6e9;border-color:#f0e7cc;color:#b29960}.tag.negative{background:#fcf1ed;border-color:#f0e2db;color:#b68d7b}.tag.neutral,.tag.muted{background:#f4f6f3;color:#939e91;border-color:#e7ece4}.tag.uncertain{background:#f0f1f8;color:#8992ac}td .tag{margin-top:4px}.icon-btn{border:1px solid #e6ece2;background:white;border-radius:5px;width:28px;height:28px;color:#91a18b;padding:3px}.icon-btn .icon{width:14px;height:14px}.pagination{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;font-size:10px;color:#94a18f}.pagination>div{display:flex;gap:8px}.pagination .btn{font-size:10px;min-height:28px;padding:5px 10px}.footnote{font-size:10px;color:#97a38f;line-height:1.9;margin:14px 0}.notice-inline{background:#eff4ec;border-radius:6px;color:#84917a;font-size:11px;padding:12px 14px;line-height:1.9;display:flex;gap:9px;align-items:flex-start;margin-bottom:20px}.notice-inline .icon{margin-top:2px;width:16px;height:16px}.topic-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.topic-card{padding:21px}.topic-card-top{display:flex;align-items:center;justify-content:space-between}.topic-mark{width:35px;height:35px;border-radius:8px;background:#edf3e7;display:grid;place-items:center;color:#76996c}.color-1{background:#eff0fa;color:#9398bb}.color-2{background:#faf0e4;color:#bd9e7a}.color-3{background:#eef2f3;color:#89a0a5}.topic-card h2{font-size:16px;margin:21px 0 10px}.topic-card>p{font-size:11px;color:#96a08d;line-height:1.9;min-height:42px}.topic-number{font-size:28px;margin:20px 0 15px}.topic-number small{font-size:10px;color:#a1aa98;margin-left:9px}.topic-card blockquote{font-size:11px;line-height:1.8;color:#85937c;border-left:2px solid #e0e8d7;margin:0 0 20px;padding:0 0 0 12px;min-height:55px}.card-actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #edf1e7;padding-top:15px}.card-actions .btn{font-size:10px}.empty{text-align:center;padding:55px 20px;grid-column:1/-1;color:#91a186}.empty>.icon{width:32px;height:32px;color:#acbca1}.empty h3{font-size:15px;font-weight:500;color:#668059;margin:17px 0 8px}.empty p{font-size:12px;line-height:1.8}.empty .btn{margin-top:10px}.alert{padding:12px;background:#fff2e8;border:1px solid #efdbcb;border-radius:6px;font-size:12px;color:#a66d4a;margin-bottom:20px}.boot{padding:50px;font-size:14px;color:#577445}dialog{border:1px solid #e0e8d9;border-radius:13px;box-shadow:0 25px 90px #142a2630;width:min(590px,calc(100% - 32px));max-height:90vh;padding:0;color:#324c3b;background:#fff}dialog.wide-modal{width:min(800px,calc(100% - 32px))}dialog::backdrop{background:#132d2766;backdrop-filter:blur(3px)}.modal-header{display:flex;align-items:center;justify-content:space-between;padding:22px 25px;border-bottom:1px solid var(--border);position:sticky;top:0;background:white;z-index:1}.modal-header h2{margin:0;font-size:17px;font-weight:550}.close{border:0;background:#f2f5ef;color:#8f9f83;border-radius:50%;font-size:22px;width:28px;height:28px;line-height:1}.modal-content{padding:23px 25px;font-size:12px;line-height:1.9}.modal-content>h3{font-size:19px}.modal-content form>label,.form-grid>label{display:flex;flex-direction:column;font-size:12px;margin:15px 0;color:#6c825e;gap:6px}.modal-content input:not([type=checkbox]):not([type=file]),.modal-content select,.modal-content textarea{width:100%;border:1px solid #dfe6da;border-radius:5px;padding:10px;background:white;color:#4f6544;font-size:12px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 17px}.form-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:23px}.form-error{color:#ba7757;font-size:12px;line-height:1.8;margin:12px 0 0}.form-error:empty{display:none}.detail-meta{display:flex;gap:8px;align-items:center;color:#9aa48f;font-size:10px}.field-label{font-size:12px!important;color:#8a987c;margin-top:23px;font-weight:400}.original{background:#f5f8f1;border-left:3px solid #adc798;margin:13px 0;padding:17px 19px;color:#4b6441;line-height:2;white-space:pre-wrap;overflow-wrap:anywhere}.source-list{max-height:270px;overflow:auto;border:1px solid #e6ebdf;border-radius:6px}.source-list>div{padding:13px 15px;border-bottom:1px solid #edf1e6}.source-list>div:last-child{border:none}.source-list p{margin:8px 0;color:#78886a;font-size:11px;overflow-wrap:anywhere}.source-list small{font-size:9px;color:#9eaa90}.checkbox-label{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:9px!important;line-height:1.8}.description-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:#879775}.upload-area{border:1px dashed #c8d8bd;background:#fafcf7;border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:37px 20px;margin-bottom:18px}.upload-area>.icon{width:31px;height:31px;color:#83a26e}.upload-area h3{font-size:16px;font-weight:500;margin-bottom:5px}.upload-area p{font-size:11px;color:#9ca68e}.file-label{margin:16px 0}.file-label input{display:none}.import-steps{display:flex;gap:22px;font-size:10px;color:#a6b298;margin-bottom:21px;padding-bottom:16px;border-bottom:1px solid #e9eee2}.import-steps b{font-weight:500;color:#547b43}.import-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.import-counts>div{background:#f5f8ef;padding:15px;text-align:center;border-radius:6px}.import-counts strong{font-size:24px;display:block}.import-counts span{font-size:10px;color:#91a17f}.preview-scroll{max-height:270px;overflow:auto}.preview-scroll table{font-size:10px}.preview-scroll td{padding:9px;max-width:430px;overflow-wrap:anywhere}.success-icon{width:45px;height:45px;background:#e9f2df;color:#7b9b64;border-radius:50%;display:grid;place-items:center;margin:0 auto}.success-icon+.h3{text-align:center}.about-logo{display:flex;gap:12px;align-items:center;margin-bottom:20px}.about-logo strong{font-size:23px;font-weight:550}.about-logo .tag{margin-left:auto}.about-list{padding-left:19px;color:#8b987b;font-size:12px;line-height:2.1}.about-list li{margin:9px 0}#toast{position:fixed;bottom:28px;left:calc(50% + 90px);transform:translate(-50%,15px);padding:12px 20px;max-width:calc(100vw - 32px);border-radius:8px;color:white;background:#264b39;box-shadow:0 5px 20px #253e2630;font-size:12px;line-height:1.7;opacity:0;pointer-events:none;transition:.2s;z-index:100}#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:1600px){.content{padding-top:45px}.page-heading{margin-bottom:33px}.stats{margin-bottom:35px}.panel-head{padding-top:25px}.topic-bars{padding-bottom:25px}.topic-bar-row{padding-top:18px}.sentiment-body{min-height:260px}.histogram{height:220px}.steps>div{margin:17px 0}}
+@media(max-width:1200px){.sidebar{width:210px;padding-left:16px;padding-right:16px}.main{margin-left:210px}.content{padding:27px 25px 15px}.topbar{padding:0 25px}.project-select select{width:100px}.sentiment-body{gap:15px;padding-left:16px;padding-right:16px}.donut{width:140px;height:140px}.donut>div{width:107px;height:107px}.donut strong{font-size:26px}.stat{padding:17px 15px}.stat small{font-size:9px}.topic-cards{grid-template-columns:repeat(2,1fr)}.demo-banner .btn{display:none}.histogram{gap:8px}}
+@media(max-width:960px){.sidebar{width:185px;padding:25px 12px 15px}.brand{font-size:18px;gap:7px}.brand img{width:29px;height:29px}.brand span{display:none}.main{margin-left:185px}.project-select select{width:85px;font-size:12px}.workspace-label span{display:none}.analytics-grid,.bottom-grid{grid-template-columns:1fr}.sentiment-body{justify-content:center;gap:45px;min-height:auto;padding-bottom:25px}.legend{max-width:150px}.page-heading h1{font-size:25px}.stats{gap:10px}.stat-label{font-size:11px}.stat-label .icon{display:none}.stat strong{font-size:30px}.stat small{line-height:1.7;display:block;min-height:30px}.top-actions{gap:12px}.filterbar{flex-wrap:wrap}.filterbar .search{flex-basis:100%}.selection-bar{flex-wrap:wrap}.nav-item{font-size:12px}.nav-item small{font-size:10px}}
+@media(max-width:650px){.sidebar{position:static;width:auto;padding:16px 17px}.brand{margin-bottom:17px;font-size:20px}.brand span{display:block;margin-left:auto}.workspace-label,.project-select,.new-project,.sidebar-bottom{display:none}.sidebar nav{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.nav-item{padding:9px 5px;justify-content:center;font-size:11px;gap:5px}.nav-item .icon{width:14px;height:14px}.nav-item small{display:none}.main{margin-left:0}.topbar{height:49px;padding:0 18px}.local-note{display:none}.content{padding:23px 17px 15px}.page-heading{gap:12px;align-items:flex-start;margin-bottom:20px}.page-heading h1{font-size:23px;margin-top:9px;letter-spacing:-1px}.page-heading p{font-size:11px}.page-heading>.btn{padding:7px 9px;font-size:10px;margin-top:30px}.eyebrow{font-size:8px;letter-spacing:.5px}.eyebrow span{margin:0 4px}.demo-banner{font-size:10px;padding:11px;gap:8px}.demo-banner strong{display:block}.stats{grid-template-columns:1fr 1fr;gap:11px;margin-bottom:24px}.stat{padding:17px}.stat small{min-height:auto}.stat-label .icon{display:block}.section-title{font-size:13px}.section-title span{display:none}.segmented button{font-size:9px;padding:6px 8px}.panel-head{padding:18px 17px 10px}.topic-bars{padding:0 17px 20px}.bottom-grid,.analytics-grid{gap:15px;margin-bottom:15px}.histogram{padding:12px 17px 15px;gap:6px}.hist-col small{font-size:8px}.topic-cards{grid-template-columns:1fr}.filterbar>select{max-width:140px;flex:1}.selection-bar>div{gap:9px}.selection-bar .btn{font-size:10px}.feedback-content{min-width:230px}.feedback-content small{white-space:nowrap}td{padding:16px 12px}.table-scroll table{min-width:650px}.table-scroll{scrollbar-width:thin}.form-grid{grid-template-columns:1fr}.modal-content{padding:19px}.modal-header{padding:19px}.form-actions{flex-wrap:wrap;gap:9px}.import-steps{gap:10px;font-size:9px}.import-counts{gap:7px}.import-counts>div{padding:10px 5px}.import-counts strong{font-size:21px}.about-logo{gap:8px;flex-wrap:wrap}.about-logo strong{font-size:20px}.about-logo .tag{margin-left:0}#toast{left:50%;width:max-content}.topbar .btn{font-size:10px}footer{font-size:8px}footer .link{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.file-label{position:relative;overflow:hidden}.file-label input[type=file]{display:block;position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.file-label:focus-within{outline:3px solid #a7ca77;outline-offset:3px}
+.date-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0;color:#84947c;font-size:11px}.date-filters label{display:flex;gap:8px;align-items:center}.date-filters input,.filterbar label>select{border:1px solid var(--border);background:white;padding:8px;border-radius:5px;color:#4f6847;font-size:11px}.date-filters>span{font-size:10px;color:#9aa78f}.top-actions{flex-wrap:wrap;justify-content:flex-end}.source-list label.checkbox-label{cursor:pointer}.table-scroll td small{display:block}hr{border:0;border-top:1px solid var(--border);margin:22px 0}.selection-bar>div{flex-wrap:wrap}
+@media(max-width:650px){.topbar{height:auto;min-height:55px;padding-top:7px;padding-bottom:7px;gap:12px}.top-actions{gap:9px}.top-actions .btn{font-size:9px}.date-filters>span{flex-basis:100%}.date-filters input{width:125px}.card-actions{gap:8px;flex-wrap:wrap}}
+@media(max-width:650px){.project-select{display:flex;margin:0 0 13px;padding:7px 10px}.project-select select{flex:1;width:auto}.new-project{display:flex;padding:8px 5px;margin:9px 0 0;border:0;font-size:10px}.sidebar .brand{margin-bottom:12px}}
+</style>
+</head>
+<body>
+  <div id="app"><p class="boot">正在打开 InsightFlow…</p></div>
+  <dialog id="modal" aria-labelledby="modal-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module">const __modules = Object.create(null);
+__modules["domain/config.js"] = (()=>{
+const LIMITS = Object.freeze({
+  uploadBytes: 5 * 1024 * 1024,
+  importRows: 2_000,
+  importColumns: 50,
+  contentChars: 5_000,
+  bulkItems: 200,
+  aiTimeoutMs: 45_000,
+  aiMaxAttempts: 3,
+  pageSize: 20,
+  maxPageSize: 100,
+  confirmedTopics: 100,
+});
+
+const SENTIMENTS = ['positive', 'neutral', 'negative', 'uncertain']         ;
+const ISSUE_TYPES = ['feature_request', 'bug', 'usability', 'performance', 'other', 'uncertain']         ;
+const REVIEW_REASONS = ['new_topic', 'multi_issue', 'insufficient_context', 'possible_sensitive', 'ambiguous']         ;
+                                                  
+                                                   
+                                                         
+
+return {LIMITS,SENTIMENTS,ISSUE_TYPES,REVIEW_REASONS};
+})();
+__modules["domain/errors.js"] = (()=>{
+class DomainError extends Error {
+           code        ;
+           status        ;
+  constructor(code        , message        , status = 422) {
+    super(message);
+    this.name = 'DomainError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
+return {DomainError};
+})();
+__modules["domain/dates.js"] = (()=>{
+const { DomainError } = __modules["domain/errors.js"];
+
+function parseFeedbackDate(value        , timezone                           = 'Asia/Hong_Kong') {
+  if (!value.trim()) return { timestamp: null, day: null };
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(Z|[+-]\d{2}:\d{2})?)?$/.exec(value.trim());
+  const fail = ()        => { throw new DomainError('INVALID_DATE', '日期需为有效 YYYY-MM-DD 或 ISO 时间，不能使用模糊日期'); };
+  if (!m) return fail();
+  const y=Number(m[1]),mo=Number(m[2]),d=Number(m[3]),h=Number(m[4]||0),mi=Number(m[5]||0),s=Number(m[6]||0);
+  if (y<1900 || y>2200 || mo<1 || mo>12 || d<1 || d>new Date(Date.UTC(y,mo,0)).getUTCDate() || h>23 || mi>59 || s>59) return fail();
+  const zone=m[8] || (timezone==='UTC'?'Z':'+08:00');
+  if (zone!=='Z' && (Number(zone.slice(1,3))>14 || Number(zone.slice(4))>59 || (Number(zone.slice(1,3))===14 && Number(zone.slice(4))!==0))) return fail();
+  const timestamp=new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]||'00'}:${m[5]||'00'}:${m[6]||'00'}.${(m[7]||'0').padEnd(3,'0')}${zone}`).toISOString();
+  const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Hong_Kong',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(timestamp));
+  return {timestamp,day};
+}
+
+return {parseFeedbackDate};
+})();
+__modules["domain/workflow.js"] = (()=>{
+const { DomainError } = __modules["domain/errors.js"];
+const { LIMITS, SENTIMENTS, ISSUE_TYPES, REVIEW_REASONS } = __modules["domain/config.js"];
+                                                                      
+
+                                                                                            
+const transitions                                                          = {
+  pending: ['planned', 'rejected'],
+  planned: ['pending', 'in_progress', 'rejected'],
+  in_progress: ['planned', 'done'],
+  done: ['in_progress'],
+  rejected: ['pending'],
+};
+
+function assertTransition(from                   , to                   , reopenConfirmed = false) {
+  if (from === to) return;
+  if (!transitions[from]?.includes(to)) throw new DomainError('INVALID_TRANSITION', '当前状态不允许该流转', 409);
+  if ((from === 'done' || from === 'rejected') && !reopenConfirmed) {
+    throw new DomainError('REOPEN_CONFIRMATION_REQUIRED', '请确认重新打开需求', 409);
+  }
+}
+
+function assertRevision(actual        , expected        ) {
+  if (!Number.isInteger(expected) || actual !== expected) {
+    throw new DomainError('REVISION_CONFLICT', '内容已发生变化，请刷新后再提交', 409);
+  }
+}
+
+function assertBulkSelection(ids          ) {
+  if (ids.length < 1 || ids.length > LIMITS.bulkItems) throw new DomainError('INVALID_SELECTION', `请选择 1—${LIMITS.bulkItems} 条记录`);
+  if (new Set(ids).size !== ids.length) throw new DomainError('DUPLICATE_SELECTION', '选择中包含重复记录');
+}
+
+                              
+                  
+                  
+                       
+                       
+  
+                              
+                                                
+                                        
+  
+
+function effectiveClassification(ai                       , review                       ) {
+  if (review?.status === 'rejected') return null;
+  if (review) {
+    if (!review.classification) throw new DomainError('INVALID_REVIEW', '已审核结果缺少分类');
+    return { ...review.classification, origin: 'human'          };
+  }
+  return ai ? { ...ai, origin: 'ai'          } : null;
+}
+
+function normalizeTopicName(value        ) {
+  return value.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLowerCase();
+}
+
+                            
+                                                                                                          
+  
+function assertImportCounts(counts              , terminal = false) {
+  if (Object.values(counts).some(n => !Number.isInteger(n) || n < 0)) throw new DomainError('INVALID_COUNTS', '导入计数必须是非负整数', 500);
+  const { total, imported, skipped, invalid, writeFailed, pending } = counts;
+  if (total !== imported + skipped + invalid + writeFailed + pending || (terminal && pending !== 0)) {
+    throw new DomainError('IMPORT_COUNT_MISMATCH', '导入计数不一致', 500);
+  }
+}
+
+                        
+                  
+                          
+                                     
+                       
+                        
+                                 
+                         
+  
+
+function validateAiOutput(value         , redactedContent        , confirmedTopicIds                     )           {
+  const fail = (message        )        => { throw new DomainError('INVALID_AI_OUTPUT', message); };
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return fail('AI 输出不是对象');
+  const v = value                           ;
+  const keys = ['summary', 'topic_id', 'proposed_topic_name', 'sentiment', 'issue_type', 'review_reasons', 'evidence_quote'];
+  if (Object.keys(v).some(k => !keys.includes(k)) || keys.some(k => !(k in v))) return fail('AI 输出字段不符合约定');
+  if (typeof v.summary !== 'string' || !v.summary.trim() || [...v.summary].length > 200) return fail('摘要为空或过长');
+  const hasTopic = typeof v.topic_id === 'string' && v.topic_id.length > 0;
+  const hasCandidate = typeof v.proposed_topic_name === 'string' && v.proposed_topic_name.trim().length > 0;
+  if (hasTopic === hasCandidate) return fail('已有主题和候选主题必须二选一');
+  if (hasTopic && (v.proposed_topic_name !== null || !confirmedTopicIds.has(v.topic_id          ))) return fail('主题不属于当前项目可用主题');
+  if (hasCandidate && (v.topic_id !== null || [...(v.proposed_topic_name          ).trim()].length < 2 || [...(v.proposed_topic_name          ).trim()].length > 30)) return fail('候选主题字段非法');
+  if (!SENTIMENTS.includes(v.sentiment             ) || !ISSUE_TYPES.includes(v.issue_type             )) return fail('分类枚举非法');
+  if (!Array.isArray(v.review_reasons) || v.review_reasons.some(r => !REVIEW_REASONS.includes(r))) return fail('审核原因非法');
+  if (hasCandidate && !v.review_reasons.includes('new_topic')) return fail('候选主题必须标记待审核原因');
+  if (typeof v.evidence_quote !== 'string' || !v.evidence_quote.trim() || !redactedContent.includes(v.evidence_quote)) return fail('证据必须是输入正文的连续片段');
+  return { ...(v            ), summary: v.summary.trim(), proposed_topic_name: hasCandidate ? (v.proposed_topic_name          ).trim() : null };
+}
+
+return {assertTransition,assertRevision,assertBulkSelection,effectiveClassification,normalizeTopicName,assertImportCounts,validateAiOutput};
+})();
+__modules["domain/csv.js"] = (()=>{
+const { DomainError } = __modules["domain/errors.js"];
+const { LIMITS } = __modules["domain/config.js"];
+const { parseFeedbackDate } = __modules["domain/dates.js"];
+
+                                                               
+function parseCsv(bytes            )           {
+  if (bytes.byteLength > LIMITS.uploadBytes) throw new DomainError('FILE_TOO_LARGE', '文件超过 5 MiB', 413);
+  let text        ;
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch { throw new DomainError('INVALID_ENCODING', '请转换为 UTF-8 编码再上传'); }
+  if (text.includes('\0')) throw new DomainError('INVALID_CSV', '文件含有不支持的二进制内容');
+  const records             = [];
+  let row           = [], cell = '', quoted = false, afterQuote = false, started = false;
+  const endCell = () => {
+    row.push(cell); cell = ''; afterQuote = false; started = false;
+    if (row.length > LIMITS.importColumns) throw new DomainError('TOO_MANY_COLUMNS', 'CSV 超过 50 列');
+  };
+  const endRow = () => {
+    endCell(); records.push(row); row = [];
+    if (records.length > LIMITS.importRows + 1) throw new DomainError('TOO_MANY_ROWS', 'CSV 超过 2,000 条数据行');
+  };
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') { quoted = false; afterQuote = true; }
+      else cell += c;
+      continue;
+    }
+    if (afterQuote && c !== ',' && c !== '\r' && c !== '\n') throw new DomainError('INVALID_CSV', '引号关闭后存在非法字符');
+    if (c === '"') {
+      if (started || cell) throw new DomainError('INVALID_CSV', '未转义的引号');
+      quoted = true; started = true;
+    } else if (c === ',') endCell();
+    else if (c === '\r' || c === '\n') { if (c === '\r' && text[i + 1] === '\n') i++; endRow(); }
+    else { cell += c; started = true; }
+  }
+  if (quoted) throw new DomainError('INVALID_CSV', 'CSV 引号未闭合');
+  if (cell || row.length || started || afterQuote) endRow();
+  if (!records.length || records[0].every(c => !c.trim())) throw new DomainError('MISSING_HEADER', 'CSV 缺少有效表头');
+  const headers = records.shift() ;
+  if (records.some(r => r.length !== headers.length && !r.every(c => !c.trim()))) throw new DomainError('INVALID_CSV', '数据列数与表头不一致');
+  return { headers, rows: records };
+}
+
+                                                                                                                                                                 
+                                                                                                                                                       
+function validateRows(table          , mapping         , timezone                           = 'Asia/Hong_Kong')              {
+  const positions = Object.values(mapping);
+  if (!Number.isInteger(mapping.content) || positions.some(p => !Number.isInteger(p) || p < 0 || p >= table.headers.length) || new Set(positions).size !== positions.length) {
+    throw new DomainError('INVALID_MAPPING', '正文映射缺失、列号无效或重复映射');
+  }
+  return table.rows.map((row, i) => {
+    const recordNo = i + 2;
+    if (row.every(v => !v.trim())) return { recordNo, status: 'empty', errors: [] };
+    const get = (index         ) => index === undefined ? '' : (row[index] ?? '').trim();
+    const content = get(mapping.content);
+    const errors           = [];
+    if (!content || [...content].length > LIMITS.contentChars) errors.push('正文为空或超过 5,000 字符');
+    const values                                         = { content, raw_text: row[mapping.content] ?? '' };
+    try { const date=parseFeedbackDate(get(mapping.feedback_at),timezone);values.feedback_at=date.timestamp;values.date=date.day; }
+    catch { errors.push('反馈时间无效，请使用 YYYY-MM-DD 或 ISO 时间'); }
+    for (const [key, max] of [['source', 80], ['external_id', 200], ['platform', 40], ['app_version', 80]]         ) {
+      const value = get(mapping[key]); values[key] = value || null;
+      if ([...value].length > max) errors.push(`${key} 超过 ${max} 字符`);
+    }
+    if (values.external_id && !values.source) errors.push('有外部 ID 时必须提供来源');
+    const rating = get(mapping.rating);
+    values.rating = rating ? Number(rating) : null;
+    if (rating && (!/^\d+(\.\d+)?$/.test(rating) || Number(rating) < 1 || Number(rating) > 5)) errors.push('评分须为 1—5 的数值');
+    return { recordNo, status: errors.length ? 'invalid' : 'valid', values, errors };
+  });
+}
+
+function escapeCsvCell(value         )         {
+  let text = String(value ?? '');
+  if (/^[\s]*[=+\-@]/u.test(text)) text = `'${text}`;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+return {parseCsv,validateRows,escapeCsvCell};
+})();
+__modules["demo-model.mjs"] = (()=>{
+const STORAGE_KEY = 'insightflow-demo-v1';
+const SCHEMA_VERSION = 1;
+const uid = () => crypto.randomUUID();
+const rows = [
+  ['让 chatagent 修改登录组件，它却改了不相关的配置文件，希望应用前能逐文件确认。', 'coding', 'negative', 'feature_request', 'pending', 'Windows'],
+  ['代码修改前如果能显示差异预览，我会更放心让 Agent 处理整个项目。', 'coding', 'neutral', 'feature_request', 'confirmed', 'macOS'],
+  ['连续聊了十几轮后，之前说好的技术栈又被忘了，总要重新解释。', 'context', 'negative', 'usability', 'modified', 'Web'],
+  ['上传扫描版 PDF 后回答一直说没有正文，希望告诉我是否支持 OCR。', 'files', 'negative', 'usability', 'pending', 'Web'],
+  ['问到某个接口的参数，给出的函数根本不存在，回答却很确定。', 'quality', 'negative', 'bug', 'confirmed', 'Web'],
+  ['希望代码修改后能一键撤销这轮操作，而不是手动逐个还原文件。', 'coding', 'neutral', 'feature_request', 'pending', 'Windows'],
+  ['这次回答附上了可打开的来源链接，核对资料方便很多。', 'quality', 'positive', 'usability', 'confirmed', 'Android'],
+  ['发送简单问题后要等很久才开始输出，希望显示当前是在排队还是思考。', 'speed', 'negative', 'performance', 'pending', 'Web'],
+  ['让它继续修改上一轮的代码，结果重新生成了另一套实现。', 'context', 'negative', 'usability', 'confirmed', 'macOS'],
+  ['引用 PDF 的结论时，希望附上页码和原文片段，方便核查。', 'files', 'neutral', 'feature_request', 'pending', 'Web'],
+  ['明明提示还有额度，发消息后却说次数用完了，规则看不明白。', 'quota', 'negative', 'usability', 'pending', 'iOS'],
+  ['新版本开始输出更快了，长回答边生成边阅读比较顺畅。', 'speed', 'positive', 'performance', 'confirmed', 'Android'],
+  ['Agent 修改代码后没有说明改了哪些文件，我不敢直接提交。', 'coding', 'negative', 'usability', 'modified', 'Windows'],
+  ['希望切换模型时保留当前对话上下文，不用重新粘贴需求。', 'context', 'neutral', 'feature_request', 'pending', 'Web'],
+  ['上传表格后把金额列认成了日期，能不能先预览识别结果？', 'files', 'negative', 'bug', 'pending', 'Web'],
+  ['生成长代码时偶尔断流，重新发送又从头来，希望能从中断位置继续。', 'speed', 'negative', 'bug', 'confirmed', 'macOS'],
+  ['查资料的回答里有几个引用链接打不开，希望标明检索时间和来源。', 'quality', 'negative', 'bug', 'pending', 'Web'],
+  ['能解释为什么要改这段代码，并给出对应测试思路，这点挺有帮助。', 'coding', 'positive', 'usability', 'confirmed', 'macOS'],
+  ['想知道这次 Agent 任务用了多少额度，运行前最好能看到消耗规则。', 'quota', 'neutral', 'feature_request', 'pending', 'Windows'],
+  ['长对话能记住我前面指定的输出格式，省了反复说明。', 'context', 'positive', 'usability', 'confirmed', 'iOS'],
+  ['同一问题重复提问时答案相互矛盾，希望不确定时明确告诉我。', 'quality', 'negative', 'usability', 'confirmed', 'Android'],
+  ['附件上传失败只显示红色图标，不知道是文件太大还是格式不支持。', 'files', 'negative', 'usability', 'pending', 'iOS'],
+  ['任务运行到一半提示额度不足，希望提前提醒并允许保存当前进度。', 'quota', 'negative', 'feature_request', 'pending', 'Web'],
+  ['代码执行卡住后看不到进度，也找不到停止按钮。', 'speed', 'negative', 'usability', 'modified', 'Windows'],
+];
+
+function initialState() {
+  const projectId = uid();
+  const topics = [
+    { id: 'coding', name: 'Agent 编程与修改控制', status: 'confirmed', description: '代码差异预览、修改范围、变更说明与撤销能力' },
+    { id: 'context', name: '上下文与对话记忆', status: 'confirmed', description: '长对话遗忘、多轮指令一致性与切换模型时的上下文保留' },
+    { id: 'quality', name: '回答可靠性与引用', status: 'confirmed', description: '事实错误、虚构接口、来源可核查性与不确定性表达' },
+    { id: 'speed', name: '响应速度与任务状态', status: 'confirmed', description: '首字等待、排队与思考状态、断流恢复及任务停止' },
+    { id: 'files', name: '文件理解与证据定位', status: 'candidate', description: 'PDF 与表格识别、上传错误、页码引用及原文证据' },
+    { id: 'quota', name: '使用额度与消耗透明', status: 'candidate', description: '额度显示、消耗规则、运行前提醒与进度保留' },
+  ];
+  const feedback = rows.map((r, i) => ({ id: uid(), content: r[0], topicId: r[1], sentiment: r[2], issueType: r[3], review: r[4], platform: r[5], source: ['产品内反馈', '开发者社区', '用户访谈', 'App 商店'][i % 4], date: `2026-10-${String(6 + Math.floor(i / 2)).padStart(2, '0')}`, origin: '示例预设', analysisStatus: 'succeeded', revision: 0, history: [], keys: [] }));
+  const source = feedback.find(f => f.topicId === 'coding' && f.review === 'confirmed');
+  const req = { id: uid(), title: 'Agent 应用代码修改前支持逐文件差异确认', description: '用户需要先核查修改范围再应用代码。建议展示逐文件差异、允许取消本轮操作，并保留来源反馈用于后续验证。此条为合成数据示例，尚无真实价值或效果结论。', priority: 'medium', status: 'pending', sources: [snapshot(source, topics)], createdAt: '2026-10-15T08:00:00.000Z', revision: 0 };
+  return { version: SCHEMA_VERSION, activeProjectId: projectId, projects: [{ id: projectId, name: 'chatagent', appName: 'chatagent · AI 工作台', description: '虚构的通用对话与 Agent 编程平台，覆盖资料问答、文件理解与代码修改场景', seedKey: 'chatagent-v1', topics, feedback, requirements: [req], imports: [], isSample: true }] };
+}
+
+function projectOf(state) {
+  return state.projects.find(p => p.id === state.activeProjectId) || state.projects[0];
+}
+function effective(f) { return f.analysisStatus === 'succeeded' && f.review !== 'rejected'; }
+function isReviewed(f) { return f.review === 'confirmed' || f.review === 'modified'; }
+function snapshot(f, topics) {
+  return { id: f.id, content: f.content, topicName: topics.find(t => t.id === f.topicId)?.name || '未归类', origin: f.origin, review: f.review, revision: f.revision };
+}
+function classifyMock(text) {
+  const groups = [
+    [/额度|计费|消耗|次数|扣费/, '使用额度与消耗透明', 'usability'],
+    [/附件|上传|PDF|表格|页码|OCR/i, '文件理解与证据定位', 'usability'],
+    [/上下文|记忆|忘|多轮|上一轮|长对话|切换模型/, '上下文与对话记忆', 'usability'],
+    [/排队|思考状态|首字|断流|中断|卡住|停止|进度|慢|等待|流畅/, '响应速度与任务状态', 'performance'],
+    [/代码|编程|撤销|差异|配置文件|Agent/i, 'Agent 编程与修改控制', 'feature_request'],
+    [/引用|来源|事实|虚构|接口|矛盾|不确定|回答/, '回答可靠性与引用', 'usability'],
+  ];
+  const match = groups.find(([regex]) => regex.test(text));
+  return { name: match?.[1] || '待梳理反馈', issueType: match?.[2] || 'uncertain', sentiment: /失败|错误|慢|卡|不|麻烦/.test(text) ? 'negative' : /喜欢|方便|流畅/.test(text) ? 'positive' : 'neutral' };
+}
+
+function reviewFeedback(project, id, revision, action, changes = {}) {
+  const f = project.feedback.find(f => f.id === id);
+  if (!f || f.revision !== revision) throw new Error('反馈已变化，请重新打开详情。');
+  if (f.analysisStatus !== 'succeeded') throw new Error('反馈尚无有效分析结果，请先完成分析。');
+  if (!['confirmed', 'modified', 'rejected'].includes(action)) throw new Error('不支持的审核动作。');
+  if (Object.keys(changes).some(k=>!['topicId','sentiment','issueType','summary'].includes(k))) throw new Error('审核字段不受支持。');
+  if (changes.sentiment&&!['positive','negative','neutral','uncertain'].includes(changes.sentiment)) throw new Error('情绪分类无效。');
+  if (changes.issueType&&!['feature_request','bug','usability','performance','other','uncertain'].includes(changes.issueType)) throw new Error('问题类型无效。');
+  if (changes.summary!==undefined && (typeof changes.summary!=='string'||!changes.summary.trim()||[...changes.summary].length>200)) throw new Error('摘要需为 1—200 字符。');
+  if (action !== 'rejected') {
+    const topic = project.topics.find(t => t.id === (changes.topicId || f.topicId));
+    if (!topic || topic.status !== 'confirmed') throw new Error('请先在主题页确认候选主题，再审核反馈。');
+  }
+  f.history.push({ review: f.review, topicId: f.topicId, sentiment: f.sentiment, issueType:f.issueType, summary:f.summary||null, at: new Date().toISOString(), revision: f.revision });
+  Object.assign(f, changes, { review: action, revision: f.revision + 1 });
+}
+
+function createRequirement(project, fields, ids, acknowledge = false) {
+  if (!fields.title?.trim() || [...fields.title.trim()].length > 120) throw new Error('请填写 1—120 字符的需求标题。');
+  if ([...String(fields.description || '')].length > 5000) throw new Error('需求描述不能超过 5,000 字符。');
+  if (!ids.length || ids.length > 200 || new Set(ids).size !== ids.length) throw new Error('请选择 1—200 条不重复的来源反馈。');
+  const feedback = ids.map(id => project.feedback.find(f => f.id === id));
+  if (feedback.some(f => !f || !effective(f))) throw new Error('来源反馈已变化或无有效分类，请重新选择。');
+  if (feedback.some(f => !isReviewed(f)) && !acknowledge) throw new Error('来源包含未经审核的建议，请确认已查看来源。');
+  if (!['unset', 'low', 'medium', 'high'].includes(fields.priority)) throw new Error('需求优先级无效。');
+  const req = { id: uid(), title: fields.title.trim(), description: fields.description || '', priority: fields.priority, status: 'pending', sources: feedback.map(f => snapshot(f, project.topics)), createdAt: new Date().toISOString(), revision: 0 };
+  project.requirements.unshift(req);
+  return req;
+}
+
+function saveState(storage, state) {
+  try { storage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch { throw new Error('浏览器存储不可用或空间不足，本次修改未保存。请导出备份或清理空间后重试。'); }
+}
+function loadState(storage) {
+  const raw = storage.getItem(STORAGE_KEY);
+  if (!raw) return initialState();
+  const data = JSON.parse(raw);
+  if (data.version !== SCHEMA_VERSION || !Array.isArray(data.projects) || !data.projects.length || data.projects.some(p => !p.id || !Array.isArray(p.feedback) || !Array.isArray(p.topics) || !Array.isArray(p.requirements) || !Array.isArray(p.imports))) throw new Error('本地演示数据无法读取，请导出原始备份后重置。');
+  // Add the new scenario once; preserve earlier imports, reviews and projects in full.
+  if (!data.projects.some(p => p.seedKey === 'chatagent-v1')) {
+    const active = projectOf(data);
+    const sample = projectOf(initialState());
+    data.projects.unshift(sample);
+    if (active.isSample) data.activeProjectId = sample.id;
+  }
+  return data;
+}
+
+return {STORAGE_KEY,SCHEMA_VERSION,uid,initialState,projectOf,effective,isReviewed,snapshot,classifyMock,reviewFeedback,createRequirement,saveState,loadState};
+})();
+__modules["workspace.mjs"] = (()=>{
+const { uid, effective, isReviewed, snapshot, SCHEMA_VERSION } = __modules["demo-model.mjs"];
+const normalized = text => text.normalize('NFKC').trim().replace(/\s+/gu,' ').toLowerCase();
+const text = (v,min,max) => typeof v==='string' && [...v.trim()].length>=min && [...v].length<=max;
+const id = v=>typeof v==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(v);
+function conflict(entity, revision) {if(!entity || (entity.revision||0)!==revision)throw new Error('内容已变化，请重新打开后操作。');}
+function renameTopic(project, topicId, revision, name) {
+  const topic=project.topics.find(t=>t.id===topicId);conflict(topic,revision);
+  if(!text(name,2,30))throw new Error('主题名称需为 2—30 字符。');
+  if(project.topics.some(t=>t.id!==topicId&&normalized(t.name)===normalized(name)))throw new Error('主题名称已存在，不会自动合并。');
+  topic.name=name.trim();topic.revision=(topic.revision||0)+1;
+}
+function setTopicStatus(project, topicId, revision, status) {
+  const topic=project.topics.find(t=>t.id===topicId);conflict(topic,revision);
+  if(!['confirmed','archived'].includes(status))throw new Error('不支持的主题状态。');
+  if(status==='confirmed'&&topic.status!=='confirmed'&&project.topics.filter(t=>t.status==='confirmed').length>=100)throw new Error('已确认主题已达 100 个上限。');
+  if(topic.status!==status){topic.previousStatus=topic.status;topic.status=status;topic.revision=(topic.revision||0)+1;}
+}
+function updateRequirement(project, reqId, revision, fields, sourceIds, acknowledge=false) {
+  const req=project.requirements.find(r=>r.id===reqId);conflict(req,revision);
+  if(!text(fields.title,1,120)||!text(fields.description||'',0,5000)||!['unset','low','medium','high'].includes(fields.priority))throw new Error('请检查标题、描述长度和优先级。');
+  if(!sourceIds.length||sourceIds.length>200||new Set(sourceIds).size!==sourceIds.length)throw new Error('必须保留 1—200 条不重复的来源。');
+  const old=new Map(req.sources.map(s=>[s.id,s]));
+  const additions=sourceIds.filter(id=>!old.has(id)).map(id=>project.feedback.find(f=>f.id===id));
+  if(additions.some(f=>!f||!effective(f)))throw new Error('新增来源不存在或没有有效分类。');
+  if(additions.some(f=>!isReviewed(f))&&!acknowledge)throw new Error('新增来源包含未审核建议，请确认已查看原文。');
+  const sources=sourceIds.map(id=>old.get(id)||snapshot(project.feedback.find(f=>f.id===id),project.topics));
+  Object.assign(req,{title:fields.title.trim(),description:fields.description||'',priority:fields.priority,sources,revision:req.revision+1,updatedAt:new Date().toISOString()});
+}
+function matchesFeedback(f, params) {
+  const get=key=>params instanceof URLSearchParams?params.get(key):params[key];
+  if(get('q')&&!f.content.toLowerCase().includes(get('q').toLowerCase()))return false;
+  if(get('topic')&&f.topicId!==get('topic'))return false;
+  if(get('review')&&f.review!==get('review'))return false;
+  if(get('analysis')&&f.analysisStatus!==get('analysis'))return false;
+  if(get('scope')==='reviewed'&&!isReviewed(f))return false;
+  if((get('topic')||get('scope'))&&!effective(f))return false;
+  if(get('from')&&(!f.date||f.date<get('from')))return false;
+  if(get('to')&&(!f.date||f.date>get('to')))return false;
+  return true;
+}
+
+function recoverInterruptedRuns(state, now=Date.now(), excludeId=null) {
+  let changed=false;
+  for(const p of state.projects)for(const run of p.analysisRuns||[]){
+    if(run.status==='running' && run.id!==excludeId && now-Date.parse(run.updatedAt||run.createdAt||0)>60_000){
+      run.status='interrupted';run.completedAt=new Date().toISOString();changed=true;
+      for(const item of run.items||[]){if(item.status==='running')item.status='unknown';else if(item.status==='queued')item.status='not_started';}
+    }
+  }
+  return changed;
+}
+
+function validateBackup(data) {
+  const fail=()=>{throw new Error('备份格式、字段或关联无效；没有修改当前数据。');};
+  if(!data||data.version!==SCHEMA_VERSION||!Array.isArray(data.projects)||!data.projects.length||data.projects.length>50||!id(data.activeProjectId))fail();
+  const unique=items=>items.every(x=>x&&id(x.id))&&new Set(items.map(x=>x.id)).size===items.length;
+  if(!unique(data.projects)||!data.projects.some(p=>p.id===data.activeProjectId))fail();
+  for(const p of data.projects){
+    if(!p||typeof p!=='object')fail();
+    if(!text(p.name,1,80)||!text(p.appName,1,120)||!Array.isArray(p.topics)||!Array.isArray(p.feedback)||!Array.isArray(p.requirements)||!Array.isArray(p.imports)||p.feedback.length>10000||p.topics.length>500||p.requirements.length>2000||!unique(p.topics)||!unique(p.feedback)||!unique(p.requirements))fail();
+    for(const t of p.topics)if(!t||!text(t.name,2,30)||!['confirmed','candidate','archived'].includes(t.status)||(t.revision!==undefined&&(!Number.isInteger(t.revision)||t.revision<0)))fail();
+    for(const f of p.feedback){
+      if(!f||typeof f!=='object')fail();
+      if(!text(f.content,1,5000)||!['pending','confirmed','modified','rejected'].includes(f.review)||!['queued','failed','succeeded'].includes(f.analysisStatus)||!Number.isInteger(f.revision)||f.revision<0||!Array.isArray(f.history)||!Array.isArray(f.keys)||f.keys.some(k=>typeof k!=='string')||!text(f.source||'',0,80)||!text(f.origin||'',0,80))fail();
+      if(f.topicId!==null&&!p.topics.some(t=>t.id===f.topicId))fail();
+      if(f.analysisStatus==='succeeded'&&(!['positive','negative','neutral','uncertain'].includes(f.sentiment)||!['feature_request','bug','usability','performance','other','uncertain'].includes(f.issueType)||!f.topicId))fail();
+      if(f.date!==null&&(typeof f.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(f.date)||Number.isNaN(Date.parse(f.date))||new Date(f.date).toISOString().slice(0,10)!==f.date))fail();
+    }
+    for(const r of p.requirements){
+      if(!r||typeof r!=='object')fail();
+      if(!text(r.title,1,120)||!text(r.description||'',0,5000)||!['unset','low','medium','high'].includes(r.priority)||!['pending','planned','in_progress','done','rejected'].includes(r.status)||!Number.isInteger(r.revision)||!Array.isArray(r.sources)||!r.sources.length||r.sources.length>200||!Number.isFinite(Date.parse(r.createdAt))||!unique(r.sources))fail();
+      for(const s of r.sources)if(!p.feedback.some(f=>f.id===s.id)||!text(s.content,1,5000)||!text(s.topicName,1,30))fail();
+    }
+    for(const b of p.imports){
+      if(!b||!id(b.id)||!text(b.fileName,1,255)||!Number.isFinite(Date.parse(b.createdAt))||['total','imported','invalid','skipped'].some(k=>!Number.isInteger(b[k])||b[k]<0)||b.total!==b.imported+b.invalid+b.skipped)fail();
+      if(b.rows!==undefined&&(!Array.isArray(b.rows)||b.rows.length>2000||b.rows.some(r=>!r||!Number.isInteger(r.recordNo)||r.recordNo<2||!['new','duplicate','invalid','empty'].includes(r.outcome)||!Array.isArray(r.errors)||r.errors.some(e=>!text(e,0,500)))))fail();
+    }
+    if(p.analysisRuns!==undefined){if(!Array.isArray(p.analysisRuns)||p.analysisRuns.length>50)fail();for(const run of p.analysisRuns){if(!id(run.id)||!Array.isArray(run.items)||run.items.length>10||!['running','completed','partial_failed','interrupted','stopped'].includes(run.status)||run.items.some(i=>!id(i.id)||!p.feedback.some(f=>f.id===i.id)||!['queued','running','succeeded','failed','unknown','not_started'].includes(i.status)))fail();}}
+  }
+  return structuredClone(data);
+}
+
+/** Merge a backup as new projects. Existing records are never overwritten. */
+function mergeBackup(current, backup) {
+  const clean=validateBackup(backup), next=structuredClone(current);
+  if(next.projects.length+clean.projects.length>50)throw new Error('恢复后项目数超过 50 个上限。');
+  for(const p of clean.projects){p.id=uid();delete p.seedKey;p.name=[...`${p.name}（恢复）`].slice(0,80).join('');p.isSample=false;next.projects.push(p);}
+  next.activeProjectId=clean.projects[0].id;
+  return next;
+}
+
+return {renameTopic,setTopicStatus,updateRequirement,matchesFeedback,recoverInterruptedRuns,validateBackup,mergeBackup};
+})();
+__modules["panels.mjs"] = (()=>{
+const { renameTopic, setTopicStatus, updateRequirement, validateBackup, mergeBackup } = __modules["workspace.mjs"];
+const { projectOf, effective, isReviewed, saveState } = __modules["demo-model.mjs"];
+
+function createPanels({getState,setState,commit,openModal,modal,esc,btn,tag,render,toast,formError,isBusy}) {
+  const attempt=fn=>{try{fn();}catch(e){formError(e);}};
+  function requirementEditor(id) {
+    const p=projectOf(getState()),r=p.requirements.find(r=>r.id===id);
+    if(!r)throw new Error('需求不存在。');
+    const oldIds=new Set(r.sources.map(s=>s.id));
+    const choices=[...r.sources.map(s=>({id:s.id,content:s.content,existing:true})),...p.feedback.filter(f=>effective(f)&&!oldIds.has(f.id)).map(f=>({...f,existing:false}))];
+    openModal('编辑需求与来源',`<form id="edit-requirement"><label>需求标题<input name="title" required maxlength="120" value="${esc(r.title)}"></label><label>需求描述<textarea name="description" rows="4" maxlength="5000">${esc(r.description)}</textarea></label><label>优先级<select name="priority">${[['unset','未设置'],['low','低'],['medium','中'],['high','高']].map(([v,l])=>`<option value="${v}" ${r.priority===v?'selected':''}>${l}</option>`).join('')}</select></label><h3 class="field-label">来源反馈（至少保留 1 条，最多 200 条）</h3><p class="footnote">保留的来源仍使用原快照；新增来源保存当前快照。取消勾选可移除关联，不删除原反馈。</p><div class="source-list">${choices.map(f=>`<div><label class="checkbox-label"><input type="checkbox" name="sources" value="${f.id}" ${f.existing?'checked':''}>${esc(f.content)}</label>${tag(f.existing?'已有来源快照':isReviewed(f)?'新增·已审核':'新增·未审核')}</div>`).join('')}</div><label class="checkbox-label"><input type="checkbox" name="acknowledge">若新增来源包含未审核建议，我已查看并确认关联。</label><div class="form-actions">${btn('close','取消','secondary')}<button type="submit" class="btn primary">保存需求与来源</button></div></form>`,true);
+    document.querySelector('#edit-requirement').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=new FormData(e.target);commit(p=>updateRequirement(p,id,r.revision,{title:data.get('title'),description:data.get('description'),priority:data.get('priority')},data.getAll('sources'),data.has('acknowledge')));modal.close();render();toast('需求内容与来源已保存。');});});
+  }
+  function topicEditor(id) {
+    const p=projectOf(getState()),t=p.topics.find(t=>t.id===id);
+    if(!t)throw new Error('主题不存在。');
+    openModal('管理主题',`<form id="edit-topic"><label>主题名称<input name="name" required minlength="2" maxlength="30" value="${esc(t.name)}"></label><p class="footnote">改名保持主题 ID 不变，关联需求的历史快照保留原名称。重名会阻止保存，不自动合并。</p><div class="form-actions"><button class="btn primary" type="submit">保存名称</button></div></form><hr><p>归档保留历史分类与统计，但不参与新的 AI 或关键词匹配；可以恢复。</p>${btn(t.status==='archived'?'restore-topic':'archive-topic',t.status==='archived'?'恢复为已确认主题':'归档此主题','secondary',`data-id="${id}" data-revision="${t.revision||0}"`)}`);
+    document.querySelector('#edit-topic').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const name=new FormData(e.target).get('name');commit(p=>renameTopic(p,id,t.revision||0,name));modal.close();render();toast('主题名称已保存。');});});
+  }
+  function topicStatus(id,revision,status) {
+    commit(p=>setTopicStatus(p,id,revision,status));modal.close();render();toast(status==='archived'?'主题已归档，历史数据保留。':'主题已恢复。');
+  }
+  function history() {
+    const p=projectOf(getState());
+    openModal('导入历史',p.imports.length?`<div class="table-scroll"><table><thead><tr><th>文件与时间</th><th>总行数</th><th>新增</th><th>错误</th><th>跳过</th><th></th></tr></thead><tbody>${p.imports.map(b=>`<tr><td>${esc(b.fileName)}<small class="subtle">${esc(new Date(b.createdAt).toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong'}))}</small></td><td>${b.total}</td><td>${b.imported}</td><td>${b.invalid}</td><td>${b.skipped}</td><td>${btn('import-history-detail','查看明细','text',`data-id="${b.id}"`)}</td></tr>`).join('')}</tbody></table></div>`:'<p>还没有导入记录。示例预设数据不计作实际导入。</p>',true);
+  }
+  function historyDetail(id) {
+    const batch=projectOf(getState()).imports.find(b=>b.id===id);if(!batch)throw new Error('导入批次不存在。');
+    const rows=batch.rows||[];
+    openModal('导入批次明细',`<h3>${esc(batch.fileName)}</h3><p>总计 ${batch.total} · 新增 ${batch.imported} · 错误 ${batch.invalid} · 跳过 ${batch.skipped}</p><p class="footnote">${rows.length?'记录号按原 CSV 数据记录保留；导入完成与分析状态分别记录。':'旧版批次没有逐行明细，仅保留汇总。'}</p><div class="preview-scroll"><table><thead><tr><th>记录号</th><th>结果</th><th>错误原因</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.recordNo)}</td><td>${esc({new:'已导入',duplicate:'重复跳过',invalid:'无效',empty:'空行跳过'}[r.outcome]||r.outcome)}</td><td>${esc((r.errors||[]).join('；')||'—')}</td></tr>`).join('')}</tbody></table></div>${btn('import-history','返回历史','secondary')}`,true);
+  }
+  function restore() {
+    if(isBusy())throw new Error('请等待真实分析结束，再恢复备份。');
+    openModal('恢复浏览器备份',`<p>选择 InsightFlow 导出的 JSON（最多 10 MiB）。先校验内容和关联，恢复为新项目；不会覆盖当前项目。备份可能含反馈原文，请妥善保管。</p><label class="btn secondary file-label">选择备份文件<input id="backup-file" type="file" accept=".json,application/json"></label>`);
+    document.querySelector('#backup-file').addEventListener('change',async e=>{
+      try {
+        const file=e.target.files[0];if(!file)return;
+        if(file.size>10*1024*1024)throw new Error('备份不能超过 10 MiB。');
+        let parsed;try{parsed=JSON.parse(await file.text());}catch{throw new Error('JSON 文件损坏，未恢复任何数据。');}
+        const clean=validateBackup(parsed);
+        openModal('确认恢复备份',`<p>已校验 ${clean.projects.length} 个项目、${clean.projects.reduce((n,p)=>n+p.feedback.length,0)} 条反馈。将新增带“（恢复）”后缀的项目，原数据不变。</p><div class="form-actions">${btn('close','取消','secondary')}<button id="confirm-restore" class="btn primary">确认添加备份项目</button></div>`);
+        document.querySelector('#confirm-restore').addEventListener('click',()=>attempt(()=>{
+          if(isBusy())throw new Error('分析进行中，请稍后恢复。');
+          const next=mergeBackup(getState(),clean);saveState(localStorage,next);setState(next);modal.close();render();toast('备份已恢复为独立项目。');
+        }));
+      }catch(e){formError(e);}
+    });
+  }
+  const runLabels={running:'处理中',completed:'已完成',partial_failed:'部分失败',interrupted:'已中断',stopped:'已停止'};
+  const itemLabels={queued:'未开始',running:'请求中',succeeded:'已保存结果',failed:'失败',unknown:'结果未知（可能已计费）',not_started:'未发送'};
+  function analysisHistory(){
+    const runs=projectOf(getState()).analysisRuns||[];
+    openModal('真实分析记录',`<p class="footnote">本浏览器最多保留最近 50 轮。刷新中断的请求不会自动重试；未知结果可能已计费。此记录不等同于服务器后台队列。</p>${runs.length?`<div class="source-list">${runs.map(r=>`<div>${tag(runLabels[r.status]||r.status)} ${esc(new Date(r.createdAt).toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong'}))}<p>${r.items.length} 条 · 已保存 ${r.items.filter(i=>i.status==='succeeded').length} 条</p>${btn('analysis-history-detail','查看逐条状态','text',`data-id="${r.id}"`)}</div>`).join('')}</div>`:'<p>尚无从本页面发起的真实分析记录。接口连通测试不计入此处。</p>'}`,true);
+  }
+  function analysisHistoryDetail(id){
+    const p=projectOf(getState()),run=(p.analysisRuns||[]).find(r=>r.id===id);if(!run)throw new Error('分析记录不存在。');
+    openModal('分析逐条状态',`<div class="source-list">${run.items.map(i=>`<div>${tag(itemLabels[i.status]||i.status)}<p>${esc(p.feedback.find(f=>f.id===i.id)?.content||'原反馈不可用')}</p>${i.error?`<p class="form-error">${esc(i.error)}</p>`:''}</div>`).join('')}</div>${btn('analysis-history','返回分析记录','secondary')}`,true);
+  }
+  return {requirementEditor,topicEditor,topicStatus,history,historyDetail,restore,analysisHistory,analysisHistoryDetail};
+}
+
+return {createPanels};
+})();
+__modules["app.mjs"] = (()=>{
+const { parseCsv, validateRows, escapeCsvCell } = __modules["domain/csv.js"];
+const { assertTransition, normalizeTopicName } = __modules["domain/workflow.js"];
+const { initialState, projectOf, effective, isReviewed, classifyMock, reviewFeedback, createRequirement, saveState, loadState, uid, STORAGE_KEY } = __modules["demo-model.mjs"];
+const { setTopicStatus, matchesFeedback, recoverInterruptedRuns } = __modules["workspace.mjs"];
+const { createPanels } = __modules["panels.mjs"];
+
+const $ = (s, root = document) => root.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const localDate = iso => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
+const icons = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  chat: '<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-1 1V11.5A8.5 8.5 0 0 1 11.5 3h1a8.5 8.5 0 0 1 8.5 8.5Z"/><path d="M7 9h10M7 13h6"/>',
+  layers: '<path d="m12 3 10 5-10 5L2 8l10-5Zm-9 10 9 5 9-5M3 18l9 5 9-5"/>',
+  list: '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h4"/>',
+  arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  upload: '<path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  search: '<circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/>',
+  spark: '<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+};
+const icon = (name, extra = '') => `<svg class="icon ${extra}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.grid}</svg>`;
+const labels = { pending: '待审核', confirmed: '已确认', modified: '已修正', rejected: '已拒绝', positive: '正向', negative: '负向', neutral: '中性', uncertain: '不确定', feature_request: '功能请求', bug: '缺陷', usability: '使用体验', performance: '性能', other: '其他', unset: '未设置', low: '低', medium: '中', high: '高', planned: '已规划', in_progress: '进行中', done: '已完成' };
+const reqLabels = { ...labels, pending: '待评估' };
+let state, storageError = '', storageCorrupt = false;
+try { state = loadState(localStorage); recoverInterruptedRuns(state); saveState(localStorage, state); }
+catch (e) { state = initialState(); storageError = e.message; storageCorrupt = true; }
+let selected = new Set(), page = 1, importData = null, formDirty = false;
+let backend = { mode: 'static', configured: false, model: 'deepseek-flash', csrfToken: '' };
+let realAiRun = null;
+const modal = $('#modal');
+const panels=createPanels({getState:()=>state,setState:value=>{state=value;storageCorrupt=false;storageError='';selected.clear();},commit,openModal,modal,esc,btn,tag,render,toast,formError,isBusy:()=>Boolean(realAiRun?.confirmed)});
+
+async function refreshBackend() {
+  try {
+    const response = await fetch('./api/v1/config', { signal: AbortSignal.timeout(4000), cache: 'no-store' });
+    if (!response.ok) throw new Error('unavailable');
+    const body = await response.json();
+    if (body.data?.mode !== 'local' || typeof body.data.csrfToken !== 'string') throw new Error('unsupported');
+    backend = body.data;
+  } catch { backend = { mode: 'static', configured: false, model: 'deepseek-flash', csrfToken: '' }; }
+}
+
+function aiSettings() {
+  const local = backend.mode === 'local';
+  openModal('真实 AI 连接状态', `<div class="detail-meta">${tag(local ? '本地后台已连接' : '静态演示模式',local?'green':'amber')}${tag(backend.configured?'密钥已配置':'未配置密钥',backend.configured?'green':'amber')}</div><p>供应商：DeepSeek · 模型：${esc(backend.model)}</p><p>${local ? '在项目根目录 .env 填写 DEEPSEEK_API_KEY，随后重启本地服务。网页只读取配置状态，不会读取或展示密钥。' : '当前网址没有可用的本地分析后台。GitHub Pages 保持免费演示；真实 AI 需要通过本机服务启动。'}</p><div class="notice-inline">真实分析会把脱敏后的所选反馈发送到 DeepSeek，并可能消耗账户余额。示例预设与关键词模拟继续独立标记；不会自动调用真实服务。</div><div class="form-actions">${btn('refresh-ai','重新检查配置','secondary')}${btn('close','知道了','primary')}</div>`);
+}
+
+function startRealAi() {
+  if (realAiRun) return toast('已有真实分析正在进行，请等待或停止后续请求。');
+  if (!backend.configured || backend.mode !== 'local') return aiSettings();
+  const p=projectOf(state), ids=[...selected];
+  if (!ids.length || ids.length>10) throw new Error('请先选择 1—10 条待审核反馈。');
+  const fs=ids.map(id=>p.feedback.find(f=>f.id===id));
+  if (fs.some(f=>!f||f.review!=='pending')) throw new Error('只允许分析待审核反馈，人工确认、修改或拒绝的结果不会被覆盖。');
+  openModal('确认发送至 DeepSeek',`<p>将分析 ${fs.length} 条反馈，使用 ${esc(backend.model)}。邮箱和手机号会做基础脱敏，但不能保证识别全部个人信息，请确认有权处理这些内容。</p><p>每条发送一次请求，本轮不自动付费重试。失败条目保留原因，可由你明确选择后重试。</p><div class="source-list">${fs.map(f=>`<div><p>${esc(f.content)}</p></div>`).join('')}</div><div class="form-actions">${btn('close','取消','secondary')}${btn('confirm-real-ai','确认发送并分析','primary')}</div>`);
+  realAiRun={projectId:p.id, items:fs.map(f=>({id:f.id,revision:f.revision,content:f.content})),confirmed:false,stop:false,done:0,failed:0};
+}
+
+async function runRealAi() {
+  const run=realAiRun;
+  if(!run || run.confirmed)return;
+  run.journalId=uid();
+  try {commit((_p,s)=>{const p=s.projects.find(p=>p.id===run.projectId);p.analysisRuns||=[];p.analysisRuns.unshift({id:run.journalId,createdAt:new Date().toISOString(),status:'running',items:run.items.map(i=>({id:i.id,status:'queued'}))});p.analysisRuns=p.analysisRuns.slice(0,50);});}catch(e){realAiRun=null;throw e;}
+  run.confirmed=true;
+  openModal('DeepSeek 分析中',`<p id="real-progress" role="status">准备发送 ${run.items.length} 条反馈…</p><p>可以关闭窗口。页面关闭或刷新会中断本轮处理，尚未提交的结果不会保存。已成功结果仍保留。</p><div class="form-actions">${btn('stop-real-ai','停止后续请求','secondary')}${btn('close','关闭窗口','text')}</div>`);
+  try {
+    for (const item of run.items) {
+      if(run.stop)break;
+      const project=state.projects.find(p=>p.id===run.projectId), f=project?.feedback.find(f=>f.id===item.id);
+      if(!f || f.revision!==item.revision || f.review!=='pending'){run.failed++;commit((_p,s)=>{s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId).items.find(i=>i.id===item.id).status='not_started';});continue;}
+      const topics=project.topics.filter(t=>t.status==='confirmed').map(t=>({id:t.id,name:t.name}));
+      try {
+        commit((_p,s)=>{const log=s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId);log.updatedAt=new Date().toISOString();log.items.find(i=>i.id===item.id).status='running';});
+        const response=await fetch('./api/v1/analyze',{method:'POST',headers:{'Content-Type':'application/json','x-insightflow-token':backend.csrfToken},body:JSON.stringify({content:item.content,topics}),signal:AbortSignal.timeout(50_000)});
+        const body=await response.json();
+        if(!response.ok){const error=new Error(body.error?.message||'分析请求失败');error.code=body.error?.code;throw error;}
+        const result=body.data;
+        commit((_p,s)=>{
+          const p=s.projects.find(p=>p.id===run.projectId), current=p?.feedback.find(f=>f.id===item.id);
+          if(!current || current.revision!==item.revision || current.review!=='pending')throw new Error('反馈已发生变化，未覆盖当前结果。');
+          const output=result.output;
+          let topic=p.topics.find(t=>t.id===output.topic_id&&t.status==='confirmed');
+          if(!topic && output.proposed_topic_name){topic=p.topics.find(t=>normalizeTopicName(t.name)===normalizeTopicName(output.proposed_topic_name));if(!topic){topic={id:uid(),name:output.proposed_topic_name,status:'candidate',description:'DeepSeek 提出的候选主题，待人工确认。'};p.topics.push(topic);}}
+          if(!topic||topic.status==='archived')throw new Error('主题库已变化或主题已归档，请恢复主题后重新分析。');
+          current.aiVersions ||= [];
+          current.aiVersions.push({output,metadata:result.metadata,createdAt:new Date().toISOString()});
+          Object.assign(current,{topicId:topic.id,sentiment:output.sentiment,issueType:output.issue_type,summary:output.summary,evidenceQuote:output.evidence_quote,reviewReasons:output.review_reasons,origin:'DeepSeek 真实分析',analysisStatus:'succeeded',revision:current.revision+1,lastAiError:null});
+          p.analysisRuns.find(r=>r.id===run.journalId).items.find(i=>i.id===item.id).status='succeeded';
+        });
+        run.done++;
+      } catch(error) {
+        run.failed++;
+        const message=error.name==='TimeoutError'?'请求超时；本地未保存结果，供应商可能已处理。重试可能再次消耗额度。':error.message;
+        try {commit((_p,s)=>{const p=s.projects.find(p=>p.id===run.projectId);const log=p.analysisRuns.find(r=>r.id===run.journalId).items.find(i=>i.id===item.id);log.status='failed';log.error=message;const f=p.feedback.find(f=>f.id===item.id);if(f&&f.revision===item.revision){f.lastAiError=message;if(f.analysisStatus!=='succeeded')f.analysisStatus='failed';}});} catch(storageFailure){run.stop=true;toast(storageFailure.message);}
+        if(['AI_AUTH_ERROR','AI_NOT_CONFIGURED','INVALID_SESSION','AI_RATE_LIMITED','LOCAL_RATE_LIMIT'].includes(error.code))run.stop=true;
+      }
+      const progress=$('#real-progress');if(progress)progress.textContent=`成功 ${run.done} 条 · 失败 ${run.failed} 条 · 总计 ${run.items.length} 条`;
+      render();
+    }
+    commit((_p,s)=>{const log=s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId);log.status=run.stop?'stopped':run.failed?'partial_failed':'completed';log.completedAt=new Date().toISOString();for(const i of log.items)if(i.status==='queued')i.status='not_started';});
+    const text=`真实分析${run.stop?'已停止':'结束'}：成功 ${run.done} 条，失败 ${run.failed} 条，未处理 ${run.items.length-run.done-run.failed} 条。`;
+    const progress=$('#real-progress');if(progress)progress.textContent=text;
+    toast(text);
+  } finally {realAiRun=null;selected.clear();render();}
+}
+
+function commit(fn) {
+  if (storageCorrupt) throw new Error('本地存储不可用或数据损坏，请先导出备份并重置演示。');
+  const candidate = structuredClone(state);
+  fn(projectOf(candidate), candidate);
+  saveState(localStorage, candidate);
+  state = candidate;
+}
+function toast(message) { $('#toast').textContent = message; $('#toast').classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => $('#toast').classList.remove('show'), 4000); }
+function route() {
+  const hash = location.hash.slice(1) || 'overview';
+  const [name, query = ''] = hash.split('?');
+  return { name: ['overview', 'feedback', 'topics', 'requirements'].includes(name) ? name : 'overview', params: new URLSearchParams(query) };
+}
+function go(name, filters = {}) { selected.clear(); page = 1; const query = new URLSearchParams(filters).toString(); location.hash = `${name}${query ? '?' + query : ''}`; if (route().name === name) render(); }
+function filtered(params = route().params) {
+  return projectOf(state).feedback.filter(f => matchesFeedback(f,params));
+}
+function dateFilters(params) {return `<div class="date-filters"><label>反馈日期从<input type="date" data-filter="from" aria-label="起始日期" value="${esc(params.get('from')||'')}"></label><label>至<input type="date" data-filter="to" aria-label="结束日期" value="${esc(params.get('to')||'')}"></label><span>按香港时区；指定范围后不计时间未知记录</span></div>`;}
+function empty(title, detail, button = '') { return `<div class="empty">${icon('layers')}<h3>${title}</h3><p>${detail}</p>${button}</div>`; }
+function btn(action, text, style = 'secondary', extra = '') { return `<button type="button" class="btn ${style}" data-action="${action}" ${extra}>${text}</button>`; }
+function tag(text, style = '') { return `<span class="tag ${style}">${esc(text)}</span>`; }
+function topicOf(p, f) { return p.topics.find(t => t.id === f.topicId); }
+function reviewTag(f) { return tag(labels[f.review], f.review === 'pending' ? 'amber' : isReviewed(f) ? 'green' : 'muted'); }
+
+function render() {
+  const p = projectOf(state), { name, params } = route();
+  const nav = [['overview', 'grid', '洞察概览'], ['feedback', 'chat', '用户反馈'], ['topics', 'layers', '主题洞察'], ['requirements', 'list', '需求管理']];
+  const pending = p.feedback.filter(f => f.review === 'pending').length;
+  $('#app').innerHTML = `<aside class="sidebar"><a class="brand" href="#overview"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTIiIGZpbGw9IiNiOWVkOGIiLz48cGF0aCBkPSJNMTEgMTJoOHY3aDEwdjlIMTF6IiBmaWxsPSIjMjAzNTJiIi8+PHBhdGggZD0iTTI0IDEwaDV2NWgtNXoiIGZpbGw9IiMyMDM1MmIiLz48L3N2Zz4K" width="34" height="34" alt="">InsightFlow<span>↗</span></a>
+    <div class="workspace-label">当前项目 <span>PROJECT</span></div><label class="project-select"><span class="project-icon">${esc(p.name[0])}</span><select id="project-select" aria-label="切换项目">${state.projects.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>${icon('down')}</label>
+    <nav>${nav.map(([key, ico, title]) => `<a href="#${key}" class="nav-item ${name === key ? 'active' : ''}">${icon(ico)}${title}${key === 'feedback' ? `<small>${p.feedback.length}</small>` : key === 'requirements' ? `<small>${p.requirements.length}</small>` : ''}</a>`).join('')}</nav>
+    <button class="new-project" data-action="new-project">${icon('plus')} 创建新项目</button>
+    <div class="sidebar-bottom"><div class="demo-card"><span class="live-dot"></span> 公开交互演示<p>示例数据 · 本机保存<br>${backend.configured ? '真实分析需确认 · 可能计费' : '演示不调用付费 AI'}</p>${btn('about', '了解演示模式 '+icon('arrow'), 'text')}</div><div class="profile"><span class="avatar">访</span><div>访客体验<small>无需注册，即刻探索</small></div></div></div></aside>
+    <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}</div></header>
+    <div class="content">${storageError ? `<div class="alert">${esc(storageError)} ${btn('backup', '导出原始备份', 'text')} ${btn('reset', '重置演示', 'text')}</div>` : ''}
+    <div class="page-heading"><div><div class="eyebrow">${esc(p.appName)} <span> / </span> FEEDBACK WORKSPACE</div><h1>${{ overview: '让反馈，成为下一步。', feedback: '每条反馈，都有迹可循。', topics: '从零散声音，到共性问题。', requirements: '让洞察，走向行动。' }[name]}</h1><p>${{ overview: '发现用户关注的问题，从原文证据出发，做出有依据的产品判断。', feedback: '阅读原文、核查分析建议，将有价值的反馈关联到需求。', topics: '查看相似反馈的聚合结果，确认主题后再用于产品决策。', requirements: '记录产品判断，保留来源证据，持续跟进处理状态。' }[name]}</p></div>${name === 'requirements' ? btn('new-requirement', icon('plus')+'创建需求', 'primary') : btn('import', icon('upload')+'导入反馈', 'primary')}</div>
+    ${name === 'overview' ? overview(p, pending, params) : name === 'feedback' ? feedbackPage(p, params) : name === 'topics' ? topicsPage(p) : requirementsPage(p)}
+    <footer><span>InsightFlow <b>·</b> 从用户声音，到产品行动</span><button data-action="reset" class="link">重置演示数据</button></footer></div></div>`;
+  $('#project-select').addEventListener('change', e => attempt(() => { commit((_p, s) => { s.activeProjectId = e.target.value; }); go('overview'); }));
+  const search = $('#search');
+  if (search) search.addEventListener('change', () => updateFilter('q', search.value));
+  document.querySelectorAll('[data-filter]').forEach(el => el.addEventListener('change', () => updateFilter(el.dataset.filter, el.value)));
+  document.querySelectorAll('[data-select]').forEach(el => el.addEventListener('change', () => { el.checked ? selected.add(el.dataset.select) : selected.delete(el.dataset.select); $('#selected-count').textContent = selected.size; }));
+}
+
+function overview(p, pending, params) {
+  const original=p;
+  p={...p,feedback:p.feedback.filter(f=>matchesFeedback(f,{from:params.get('from'),to:params.get('to')}))};
+  pending=p.feedback.filter(f=>f.review==='pending').length;
+  const reviewedOnly = params.get('scope') === 'reviewed';
+  const valid = p.feedback.filter(f => effective(f) && (!reviewedOnly || isReviewed(f)));
+  const reviewed = p.feedback.filter(isReviewed).length;
+  const ranked = p.topics.map(t => ({ ...t, count: valid.filter(f => f.topicId === t.id).length })).filter(t => t.count).sort((a,b) => b.count-a.count);
+  const negative = valid.filter(f => f.sentiment === 'negative').length;
+  const portions = ['negative','neutral','positive','uncertain'].map(key=>valid.length ? valid.filter(f=>f.sentiment===key).length/valid.length*100 : 0);
+  const edge1=portions[0], edge2=edge1+portions[1], edge3=edge2+portions[2];
+  const stats = [[p.feedback.length, '用户反馈', '当前项目的有效导入记录', 'chat'], [ranked.length, '反馈主题', `${p.topics.filter(t => t.status === 'candidate').length} 个候选主题待确认`, 'layers'], [pending, '待审核反馈', 'AI 建议需要你的判断', 'spark'], [p.requirements.length, '已创建需求', '每个需求均保留来源', 'list']];
+  const max = Math.max(1, ...ranked.map(t => t.count));
+  const dateValues = [...new Set(p.feedback.map(f => f.date).filter(Boolean))].sort().slice(-9);
+  const values = dateValues.map(d => valid.filter(f => f.date === d).length), vmax = Math.max(1, ...values);
+  return `<div class="demo-banner"><span class="banner-symbol">${icon('spark')}</span><div><strong>先探索，再做判断。</strong> 当前展示${p.isSample ? '虚构 App 的合成反馈；预设、模拟和真实分析会分别标记' : '当前浏览器内的反馈与模拟分析'}，不代表真实用户或业务成绩。</div>${btn('about', '查看说明 '+icon('arrow'), 'text')}</div>${dateFilters(params)}${params.get('from')||params.get('to')?`<p class="footnote">已按日期排除 ${original.feedback.filter(f=>!f.date).length} 条时间未知反馈。${btn('clear-filters','清除筛选','text')}</p>`:''}
+    <div class="stats">${stats.map(([value,title,note,ico]) => `<section class="stat"><div class="stat-label">${title}${icon(ico)}</div><strong>${value}<span>${title === '用户反馈' || title === '待审核反馈' ? '条' : '个'}</span></strong><small>${note}</small></section>`).join('')}</div>
+    <div class="section-toolbar"><div class="section-title">反馈洞察 <span>INSIGHTS</span></div><div class="segmented"><button class="${!reviewedOnly ? 'selected' : ''}" data-action="scope-all">全部有效结果</button><button class="${reviewedOnly ? 'selected' : ''}" data-action="scope-reviewed">仅已审核</button></div></div>
+    <div class="analytics-grid"><section class="panel topic-panel"><div class="panel-head"><div><h2>用户最关心什么</h2><p>按主主题汇总 · ${valid.length} 条有效分类 · 前 5 项</p></div><button class="link" data-action="nav-topics">全部主题 ${icon('arrow')}</button></div>${ranked.length ? `<div class="topic-bars">${ranked.slice(0,5).map((t,i) => `<button class="topic-bar-row" data-action="topic-feedback" data-id="${t.id}"><span class="rank">0${i+1}</span><div class="bar-body"><div class="bar-title"><span>${esc(t.name)} ${t.status === 'candidate' ? '<em>候选</em>' : ''}</span><strong>${t.count} <small>条</small><b>${Math.round(t.count/valid.length*100)}%</b></strong></div><div class="bar-track"><i style="width:${t.count/max*100}%;--bar:${['#b3d8bf','#b9c8f5','#e9c7a4','#cbd1d8'][i%4]}"></i></div></div></button>`).join('')}</div>` : empty('还没有可统计的主题', '导入反馈或切换统计口径后查看。')}</section>
+    <section class="panel sentiment-panel"><div class="panel-head"><div><h2>用户情绪</h2><p>分类建议，不等同于满意度</p></div>${icon('chat')}</div><div class="sentiment-body"><div class="donut" style="background:conic-gradient(#e6b6a0 0 ${edge1}%,#e5e9e8 ${edge1}% ${edge2}%,#aacaaf ${edge2}% ${edge3}%,#c2c8d8 ${edge3}% 100%)"><div><strong>${valid.length ? Math.round(negative/valid.length*100)+'%' : '—'}</strong><span>负向反馈占比</span></div></div><div class="legend">${[['negative','负向','#e6b6a0'],['neutral','中性','#e5e9e8'],['positive','正向','#aacaaf'],['uncertain','不确定','#c2c8d8']].map(([key,label,color]) => `<span><i style="background:${color}"></i>${label}<b>${valid.filter(f => f.sentiment === key).length}</b></span>`).join('')}</div></div></section></div>
+    <div class="bottom-grid"><section class="panel"><div class="panel-head"><div><h2>反馈时间分布</h2><p>按反馈发生日期 · 不是导入时间</p></div><span class="subtle">${p.feedback.filter(f => !f.date).length} 条时间未知</span></div>${dateValues.length ? `<div class="histogram">${dateValues.map((d,i) => `<div class="hist-col"><span>${values[i]}</span><div class="hist-track"><i style="height:${values[i]/vmax*100}%"></i></div><small>${esc(d.slice(5))}</small></div>`).join('')}</div>` : empty('暂无日期数据', '未知日期的反馈仍计入总量。')}</section>
+    <section class="panel next-step"><div class="panel-head"><div><h2>下一步，听清用户。</h2><p>从反馈到需求的工作流</p></div>${icon('arrow')}</div><div class="steps"><div><b class="step-done">${icon('check')}</b><span>导入用户反馈<small>${p.feedback.length} 条反馈已在工作区</small></span></div><div><b>02</b><span>审核主题与分类<small>已审核 ${reviewed}/${p.feedback.length} · 覆盖率 ${p.feedback.length ? Math.round(reviewed/p.feedback.length*100)+'%' : '—'}</small></span></div><div><b>03</b><span>形成可追溯的需求<small>用原文证据支撑每个判断</small></span></div></div>${btn('review-pending', '开始审核 '+icon('arrow'), 'secondary wide')}</section></div>`;
+}
+
+function feedbackPage(p, params) {
+  const all = filtered(params), pages = Math.max(1, Math.ceil(all.length/20)); page = Math.min(page, pages);
+  const visible = all.slice((page-1)*20, page*20);
+  return `${p.feedback.some(f=>f.analysisStatus==='queued')?`<div class="notice-inline">还有反馈未分类；导入结果已保存，分类不会自动完成。${btn('simulate','运行本地关键词模拟','text')}</div>`:''}<div class="filterbar"><label class="search">${icon('search')}<input id="search" type="search" placeholder="搜索反馈原文，按 Enter 筛选" value="${esc(params.get('q') || '')}"></label><select data-filter="topic" aria-label="主题筛选"><option value="">全部主题</option>${p.topics.map(t=>`<option value="${t.id}" ${params.get('topic')===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select><select data-filter="review" aria-label="审核状态"><option value="">全部审核状态</option>${['pending','confirmed','modified','rejected'].map(s=>`<option value="${s}" ${params.get('review')===s?'selected':''}>${labels[s]}</option>`).join('')}</select>${btn('clear-filters','清除筛选','text')}</div>
+    ${dateFilters(params)}<div class="filterbar"><label>处理状态 <select data-filter="analysis" aria-label="分析状态"><option value="">全部分析状态</option>${[['queued','待处理'],['succeeded','分析成功'],['failed','分析失败']].map(([v,l])=>`<option value="${v}" ${params.get('analysis')===v?'selected':''}>${l}</option>`).join('')}</select></label>${btn('import-history','查看导入历史','text')}${btn('analysis-history','真实分析记录','text')}</div><div class="selection-bar"><span>共 ${all.length} 条反馈 · 已选 <b id="selected-count">${selected.size}</b> 条</span><div>${btn('select-visible','选择本页','text')}${btn('batch-confirm','批量确认','secondary')}${btn('selected-requirement','转为需求','secondary')}${btn('real-ai','真实 AI 分析','primary')}</div></div>
+    <section class="panel table-panel">${visible.length ? `<div class="table-scroll"><table><thead><tr><th class="check-cell"></th><th>用户反馈</th><th>主主题 / 情绪</th><th>审核状态</th><th></th></tr></thead><tbody>${visible.map(f=>`<tr><td><input type="checkbox" aria-label="选择反馈：${esc(f.content.slice(0,16))}" data-select="${f.id}" ${selected.has(f.id)?'checked':''}></td><td class="feedback-content"><button data-action="detail" data-id="${f.id}">${esc(f.content)}</button><small>${esc(f.source)} <span>·</span> ${esc(f.platform || '平台未知')} <span>·</span> ${esc(f.date || '时间未知')} <span>·</span> ${esc(f.origin)}</small>${f.lastAiError ? `<small class="form-error">最近分析失败：${esc(f.lastAiError)}</small>` : ''}</td><td>${effective(f) ? `<span>${esc(topicOf(p,f)?.name || '未归类')}</span><div>${tag(labels[f.sentiment],f.sentiment)}</div>` : '<span class="subtle">无有效分类</span>'}</td><td>${reviewTag(f)}</td><td><button class="icon-btn" aria-label="查看反馈详情" data-action="detail" data-id="${f.id}">${icon('arrow')}</button></td></tr>`).join('')}</tbody></table></div>` : empty('没有匹配的反馈', '尝试清除筛选，或导入一份新的 CSV。', btn('clear-filters','清除筛选'))}<div class="pagination"><span>第 ${page} / ${pages} 页</span><div>${btn('prev-page','上一页','secondary',page===1?'disabled':'')}${btn('next-page','下一页','secondary',page===pages?'disabled':'')}</div></div></section><p class="footnote">模拟分类和示例预设均需人工核查；已拒绝的结果不会重新作为有效分类展示。</p>`;
+}
+
+function topicsPage(p) {
+  return `<div class="notice-inline">${icon('spark')} 主题是反馈的整理建议。候选主题需人工确认；归档保留历史关联，但不再参与新分类。</div><div class="topic-cards">${p.topics.length ? p.topics.map((t,i)=>{const fs=p.feedback.filter(f=>f.topicId===t.id&&effective(f));return `<section class="panel topic-card"><div class="topic-card-top"><span class="topic-mark color-${i%4}">${icon('layers')}</span>${tag({candidate:'候选主题',confirmed:'已确认主题',archived:'已归档'}[t.status],t.status==='candidate'?'amber':t.status==='confirmed'?'green':'muted')}</div><h2>${esc(t.name)}</h2><p>${esc(t.description||'来自导入反馈的分类主题，请核查原文。')}</p><div class="topic-number">${fs.length}<small>条关联反馈</small></div><blockquote>${esc(fs[0]?.content||'当前没有有效分类的反馈')}</blockquote><div class="card-actions">${btn('topic-feedback','查看反馈','text',`data-id="${t.id}"`)}${btn('edit-topic','管理主题','text',`data-id="${t.id}"`)}${t.status==='candidate'?btn('confirm-topic','确认','secondary',`data-id="${t.id}"`):t.status==='confirmed'?btn('topic-requirement','创建需求','secondary',`data-id="${t.id}"`):''}</div></section>`;}).join(''):empty('还没有主题','导入反馈后可分析并确认主题。')}</div>`;
+}
+
+function requirementsPage(p) {
+  const params=route().params;
+  const items=p.requirements.filter(r=>(!params.get('status')||r.status===params.get('status'))&&(!params.get('priority')||r.priority===params.get('priority')));
+  return `<div class="notice-inline">${icon('list')} 需求优先级由你判断；关联来源在创建时保存快照，后续主题变化不会自动增加反馈。</div><div class="filterbar"><select data-filter="status" aria-label="需求状态筛选"><option value="">全部状态</option>${['pending','planned','in_progress','done','rejected'].map(k=>`<option value="${k}" ${params.get('status')===k?'selected':''}>${reqLabels[k]}</option>`).join('')}</select><select data-filter="priority" aria-label="需求优先级筛选"><option value="">全部优先级</option>${['unset','low','medium','high'].map(k=>`<option value="${k}" ${params.get('priority')===k?'selected':''}>${reqLabels[k]}</option>`).join('')}</select>${btn('clear-requirement-filters','清除筛选','text')}</div><section class="panel table-panel">${items.length ? `<div class="table-scroll"><table><thead><tr><th>需求与来源</th><th>优先级</th><th>状态</th><th>创建日期</th><th></th></tr></thead><tbody>${items.map(r=>`<tr><td class="feedback-content"><button data-action="requirement-detail" data-id="${r.id}">${esc(r.title)}</button><small>${r.sources.length} 条来源反馈 <span>·</span> ${esc([...new Set(r.sources.map(s=>s.topicName))].join('、'))}</small></td><td>${tag(reqLabels[r.priority],r.priority==='high'?'amber':'')}</td><td>${tag(reqLabels[r.status],r.status==='done'?'green':'')}</td><td class="subtle">${esc(localDate(r.createdAt))}</td><td><button class="icon-btn" data-action="requirement-detail" data-id="${r.id}" aria-label="查看需求">${icon('arrow')}</button></td></tr>`).join('')}</tbody></table></div>` : empty(p.requirements.length?'没有符合筛选的需求':'还没有需求','可以清除筛选，或选择反馈创建需求。',p.requirements.length?btn('clear-requirement-filters','清除筛选'):btn('nav-feedback','查看用户反馈'))}</section>`;
+}
+
+function openModal(title, body, wide=false) {
+  formDirty = false;
+  modal.className = wide ? 'wide-modal' : '';
+  modal.innerHTML = `<div class="modal-header"><h2 id="modal-title">${title}</h2><button class="close" data-action="close" aria-label="关闭">×</button></div><div class="modal-content">${body}<p id="form-error" class="form-error" role="alert"></p></div>`;
+  if (!modal.open) modal.showModal();
+}
+function formError(e) { const box=$('#form-error',modal); if(box) box.textContent=e.message; else toast(e.message); }
+function attempt(fn) { try { fn(); } catch(e) { formError(e); } }
+function updateFilter(key,value) { const {name,params}=route();value ? params.set(key,value):params.delete(key);if(params.get('from')&&params.get('to')&&params.get('from')>params.get('to')){toast('起始日期不能晚于结束日期。');render();return;}selected.clear(); page=1; location.hash=`${name}?${params}`; render(); }
+
+function openDetail(id) {
+  const p=projectOf(state), f=p.feedback.find(f=>f.id===id); if(!f) return toast('反馈不存在。');
+  openModal('反馈详情', `<div class="detail-meta">${tag(f.origin)}${reviewTag(f)}<span>${esc(f.date||'时间未知')}</span></div><h3 class="field-label">原始反馈</h3><blockquote class="original">${esc(f.content)}</blockquote><p class="footnote">${esc(f.source)} · ${esc(f.platform||'平台未知')} · 当前修订 ${f.revision}</p>${f.summary ? `<h3 class="field-label">AI 摘要与证据</h3><p>${esc(f.summary)}</p><blockquote class="original">${esc(f.evidenceQuote || '')}</blockquote><p class="footnote">${esc((f.reviewReasons || []).join('、'))} · 已保留 ${(f.aiVersions || []).length} 个真实分析版本</p>` : ''}${f.lastAiError ? `<p class="form-error">最近分析失败：${esc(f.lastAiError)}</p>` : ''}<div class="notice-inline">${icon('spark')} ${esc(f.origin)}结果，请以原文为依据审核。</div><form id="review-form"><label>摘要<textarea name="summary" rows="3" maxlength="200" required>${esc(f.summary||[...f.content].slice(0,200).join(''))}</textarea></label><label>主主题<select name="topicId">${p.topics.map(t=>`<option value="${t.id}" ${t.id===f.topicId?'selected':''}>${esc(t.name)}${t.status==='candidate'?'（候选，需先确认）':''}</option>`).join('')}</select></label><div class="form-grid"><label>情绪<select name="sentiment">${['positive','neutral','negative','uncertain'].map(k=>`<option value="${k}" ${k===f.sentiment?'selected':''}>${labels[k]}</option>`).join('')}</select></label><label>问题类型<select name="issueType">${['feature_request','bug','usability','performance','other','uncertain'].map(k=>`<option value="${k}" ${k===f.issueType?'selected':''}>${labels[k]}</option>`).join('')}</select></label></div><div class="form-actions"><button class="btn text danger" type="button" data-action="reject-feedback" data-id="${f.id}" data-revision="${f.revision}">拒绝分类</button><button class="btn primary" type="submit">${icon('check')}保存审核</button></div></form><p class="footnote">已记录 ${f.history.length} 次审核变更。拒绝后保留原文，并从分类统计中移除。</p>`);
+  $('#review-form').addEventListener('submit', e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));const changed=['topicId','sentiment','issueType','summary'].some(k=>data[k]!==f[k]);commit(p=>reviewFeedback(p,id,f.revision,changed?'modified':'confirmed',data));modal.close();render();toast('审核已保存到当前浏览器。');});});
+}
+
+function openRequirement(ids) {
+  const p=projectOf(state), fs=ids.map(id=>p.feedback.find(f=>f.id===id)).filter(Boolean);
+  if(!fs.length) return toast('请先在反馈列表勾选来源反馈，或从主题创建需求。');
+  if(fs.length>200 || fs.some(f=>!effective(f))) return toast('最多选择 200 条反馈，且必须有有效分类。');
+  const revisionMap = fs.map(f=>[f.id,f.revision]);
+  openModal('从反馈创建需求', `<p class="subtle">保留 ${fs.length} 条来源反馈的当前快照，后续新增反馈不会自动加入。</p><form id="requirement-form"><label>需求标题<input name="title" required maxlength="120" placeholder="例如：Agent 应用代码前支持差异预览"></label><label>需求描述<textarea name="description" rows="3" maxlength="5000" placeholder="记录问题、预期行为，以及需要进一步验证的假设"></textarea></label><label>优先级<select name="priority"><option value="unset">未设置</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select></label><div class="source-list">${fs.map(f=>`<div>${tag(topicOf(p,f)?.name||'未归类')} ${reviewTag(f)}<p>${esc(f.content)}</p></div>`).join('')}</div>${fs.some(f=>!isReviewed(f))?'<label class="checkbox-label"><input name="acknowledge" type="checkbox" required>来源包含未审核建议，我已查看来源，仍创建需求。</label>':''}<div class="form-actions"><button class="btn secondary" type="button" data-action="close">取消</button><button class="btn primary" type="submit">创建并关联来源</button></div></form>`, true);
+  $('#requirement-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{if(revisionMap.some(([id,rev])=>p.feedback.find(f=>f.id===id)?.revision!==rev))throw new Error('来源已变化，请关闭后重新选择。');createRequirement(p,data,ids,Boolean(data.acknowledge));});modal.close();go('requirements');toast('需求已创建，来源快照已保留。');});});
+}
+
+function requirementDetail(id) {
+  const p=projectOf(state), r=p.requirements.find(r=>r.id===id); if(!r) return toast('需求不存在。');
+  const next={pending:['planned','rejected'],planned:['pending','in_progress','rejected'],in_progress:['planned','done'],done:['in_progress'],rejected:['pending']}[r.status];
+  openModal('需求详情',`<h3>${esc(r.title)}</h3><div class="detail-meta">${tag(reqLabels[r.status])}${tag('优先级：'+reqLabels[r.priority])}</div><p class="description-text">${esc(r.description||'暂无描述')}</p><h3 class="field-label">关联时来源快照 · ${r.sources.length} 条</h3><div class="source-list">${r.sources.map(s=>`<div>${tag(s.topicName)} ${tag(s.origin)}<p>${esc(s.content)}</p><small>创建时：${labels[s.review]} · 当前：${labels[p.feedback.find(f=>f.id===s.id)?.review]||'来源不可用'}</small></div>`).join('')}</div>${btn('edit-requirement','编辑内容与来源','secondary',`data-id="${r.id}"`)}<form id="status-form"><label>更新状态<select name="status"><option value="${r.status}">${reqLabels[r.status]}（当前）</option>${next.map(k=>`<option value="${k}">${reqLabels[k]}</option>`).join('')}</select></label>${['done','rejected'].includes(r.status)?'<label class="checkbox-label"><input type="checkbox" name="confirm">确认重新打开该需求</label>':''}<div class="form-actions"><button class="btn primary" type="submit">保存状态</button></div></form>`);
+  $('#status-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{const current=p.requirements.find(x=>x.id===id);if(current.revision!==r.revision)throw new Error('需求已变化，请重新打开。');assertTransition(current.status,data.status,Boolean(data.confirm));current.status=data.status;current.revision++;});modal.close();render();toast('需求状态已保存。');});});
+}
+
+function openImport() {
+  importData=null;
+  openModal('导入用户反馈',`<div class="import-steps"><b>01 选择文件</b><span>02 映射与校验</span><span>03 导入结果</span></div><div class="upload-area">${icon('upload')}<h3>把用户声音带进工作区</h3><p>UTF-8 CSV · 最多 5 MiB / 2,000 行 / 50 列</p><label class="btn primary file-label">选择 CSV 文件<input id="file-input" type="file" accept=".csv,text/csv"></label><a class="link" href="data:text/csv;charset=utf-8;base64,5q2j5paHLOadpea6kCzlpJbpg6hJRCzlubPlj7As6K+E5YiGLOWPjemmiOaXtumXtCxBcHDniYjmnKwKQWdlbnQg5L+u5pS55Luj56CB5YmN5biM5pyb5Y+v5Lul6YCQ5paH5Lu26aKE6KeI5beu5byCLOS6p+WTgeWGheWPjemmiCxjaGF0YWdlbnQtZGVtby0xMDEsV2luZG93cywzLDIwMjYtMTAtMTYsMS4wLjAK6ZW/5a+56K+d57uP5bi45b+Y6K6w5oiR5YmN6Z2i5oyH5a6a55qE5oqA5pyv5qCILOW8gOWPkeiAheekvuWMuixjaGF0YWdlbnQtZGVtby0xMDIsbWFjT1MsMiwyMDI2LTEwLTE3LDEuMC4wCuS4iuS8oCBQREYg5ZCO5biM5pyb6IO955yL5Yiw562U5qGI5a+55bqU55qE6aG156CBLOeUqOaIt+iuv+iwiCxjaGF0YWdlbnQtZGVtby0xMDMsV2ViLDQsMjAyNi0xMC0xOFQxMDowMDowMCswODowMCwxLjAuMQrpop3luqbkuI3otrPml7bluIzmnJvmj5DliY3mj5DphpLlubbkv53lrZjku7vliqHov5vluqYs5Lqn5ZOB5YaF5Y+N6aaILGNoYXRhZ2VudC1kZW1vLTEwNCxXZWIsMiwyMDI2LTEwLTE4LDEuMC4xCuaWsOeJiOacrOW8gOWni+i+k+WHuuabtOW/q+S6humYheivu+W+iOa1geeVhSxBcHAg5ZWG5bqXLGNoYXRhZ2VudC1kZW1vLTEwNSxBbmRyb2lkLDUsMjAyNi0xMC0xOSwxLjAuMQrlm57nrZTmj5DkvpvnmoTmjqXlj6PkuI3lrZjlnKjluIzmnJvkuI3noa7lrprml7bor7TmmI4s5byA5Y+R6ICF56S+5Yy6LGNoYXRhZ2VudC1kZW1vLTEwNixXZWIsMSwsMS4wLjEK" download>下载示例 CSV</a></div><div class="notice-inline">文件仅在当前浏览器解析。请勿导入敏感或无权处理的数据；免费演示不会把文件发送给 AI 服务。</div>`,true);
+  $('#file-input').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(!file.name.toLowerCase().endsWith('.csv'))throw new Error('请选择 .csv 文件。');if(file.size>5*1024*1024)throw new Error('文件不能超过 5 MiB。');const bytes=new Uint8Array(await file.arrayBuffer());const table=parseCsv(bytes);const hash=await crypto.subtle.digest('SHA-256',bytes);importData={table,fileName:file.name,fileHash:Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join(''),projectId:projectOf(state).id};showMapping();}catch(e){formError(e);}});
+}
+function showMapping() {
+  const {table,fileName}=importData;
+  openModal('映射字段与校验',`<div class="import-steps"><span>01 选择文件</span><b>02 映射与校验</b><span>03 导入结果</span></div><p>${esc(fileName)} · ${table.rows.length} 条数据行</p><form id="mapping-form"><div class="form-grid">${[['content','反馈正文 *'],['source','来源渠道'],['external_id','外部 ID'],['platform','平台'],['rating','评分（1—5）'],['feedback_at','反馈时间'],['app_version','App 版本']].map(([key,label])=>`<label>${label}<select name="${key}"><option value="">${key==='content'?'请选择':'不导入'}</option>${table.headers.map((h,i)=>`<option value="${i}" ${({'正文':'content','content':'content','来源':'source','外部ID':'external_id','平台':'platform','评分':'rating','反馈时间':'feedback_at','日期':'feedback_at','App版本':'app_version'})[h]===key?'selected':''}>${esc(h||'空表头')}（第 ${i+1} 列）</option>`).join('')}</select></label>`).join('')}</div><p class="footnote">日期支持 YYYY-MM-DD 或 ISO 时间；未带时区按香港时间解析，空值为时间未知。空行跳过，错误行不会导入；跨文件无外部 ID 的相似反馈不会自动去重。</p><button class="btn primary" type="submit">校验全部行并预览</button></form>`,true);
+  $('#mapping-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));if(data.content==='')throw new Error('必须映射反馈正文。');const mapping=Object.fromEntries(Object.entries(data).filter(([,v])=>v!=='').map(([k,v])=>[k,Number(v)]));const results=validateRows(table,mapping);importData.results=results;showPreview();});});
+}
+function rowKeys(row) {const v=row.values;return [JSON.stringify(['file',importData.fileHash,row.recordNo]),...(v?.external_id?[JSON.stringify(['source',v.source,v.external_id])]:[])];}
+function resolveImportRows(p) {
+  const keys=new Set(p.feedback.flatMap(f=>f.keys||[]));
+  return importData.results.map(row=>{if(row.status!=='valid')return {...row,outcome:row.status};const rk=rowKeys(row);if(rk.some(k=>keys.has(k)))return {...row,outcome:'duplicate'};rk.forEach(k=>keys.add(k));return {...row,outcome:'new',keys:rk};});
+}
+function showPreview() {
+  const rows=resolveImportRows(projectOf(state));importData.resolved=rows;
+  const count=status=>rows.filter(r=>r.outcome===status).length;
+  openModal('确认导入预览',`<div class="import-steps"><span>01 选择文件</span><b>02 映射与校验</b><span>03 导入结果</span></div><div class="import-counts">${[['new','可导入'],['invalid','错误行'],['empty','空行'],['duplicate','重复行']].map(([k,l])=>`<div><strong>${count(k)}</strong><span>${l}</span></div>`).join('')}</div><p class="subtle">已校验全文件，以下仅预览前 20 条；错误和重复行将跳过。</p><div class="preview-scroll"><table><thead><tr><th>原记录号</th><th>正文 / 错误说明</th><th>结果</th></tr></thead><tbody>${rows.slice(0,20).map(r=>`<tr><td>${r.recordNo}</td><td>${esc(r.errors.length?r.errors.join('；'):r.values?.content||'空行')}</td><td>${tag({new:'可导入',invalid:'错误',empty:'跳过',duplicate:'重复'}[r.outcome],r.outcome==='invalid'?'amber':'')}</td></tr>`).join('')}</tbody></table></div><div class="form-actions">${btn('import-errors','导出错误报告','text')}${btn('import-remap','返回映射','secondary')}${btn('confirm-import',`导入 ${count('new')} 条有效反馈`,'primary',count('new')?'':'disabled')}</div>`,true);
+}
+function confirmImport() {
+  if(!importData || projectOf(state).id!==importData.projectId)throw new Error('项目已变化，请重新导入。');
+  const rows=resolveImportRows(projectOf(state)), fresh=rows.filter(r=>r.outcome==='new');
+  commit(p=>{for(const row of fresh){const v=row.values;p.feedback.unshift({id:uid(),content:v.content,source:v.source||'CSV 导入',platform:v.platform||'',date:v.date||null,feedbackAt:v.feedback_at||null,rating:v.rating,appVersion:v.app_version||'',topicId:null,sentiment:'uncertain',issueType:'uncertain',review:'pending',origin:'待分析',analysisStatus:'queued',revision:0,history:[],keys:row.keys});}p.imports.unshift({id:uid(),fileName:importData.fileName,fileHash:importData.fileHash,createdAt:new Date().toISOString(),rows:rows.map(r=>({recordNo:r.recordNo,outcome:r.outcome,errors:r.errors})),total:rows.length,imported:fresh.length,invalid:rows.filter(r=>r.outcome==='invalid').length,skipped:rows.filter(r=>['empty','duplicate'].includes(r.outcome)).length});});
+  openModal('导入完成',`<div class="success-icon">${icon('check')}</div><h3>已新增 ${fresh.length} 条反馈</h3><p>总计 ${rows.length} 条 · 错误 ${rows.filter(r=>r.outcome==='invalid').length} 条 · 跳过 ${rows.filter(r=>['empty','duplicate'].includes(r.outcome)).length} 条</p><div class="notice-inline">导入完成不代表 AI 分析完成。你可以运行明确标记的本地关键词模拟；它不调用 DeepSeek，也不代表真实模型效果。</div><div class="form-actions">${btn('import-errors','导出错误报告','text')}${btn('show-imported','先查看反馈','secondary')}${btn('simulate','运行模拟分类','primary')}</div>`,true);
+  render();
+}
+function simulate() {
+  commit(p=>{for(const f of p.feedback.filter(f=>f.analysisStatus==='queued')){const result=classifyMock(f.content);let t=p.topics.find(t=>normalizeTopicName(t.name)===normalizeTopicName(result.name));if(t?.status==='archived')throw new Error('模拟匹配主题已归档，请先恢复该主题或使用真实分析。');if(!t){t={id:uid(),name:result.name,status:'candidate',description:'来自本地关键词模拟的候选主题，需人工确认。'};p.topics.push(t);}Object.assign(f,{topicId:t.id,sentiment:result.sentiment,issueType:result.issueType,origin:'关键词模拟',analysisStatus:'succeeded',revision:f.revision+1});}});
+  modal.close();go('feedback');toast('模拟分类完成，结果仍待人工审核。');
+}
+function download(name,content,type='application/json') {const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function about() {openModal('关于这份公开演示',`<div class="about-logo"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTIiIGZpbGw9IiNiOWVkOGIiLz48cGF0aCBkPSJNMTEgMTJoOHY3aDEwdjlIMTF6IiBmaWxsPSIjMjAzNTJiIi8+PHBhdGggZD0iTTI0IDEwaDV2NWgtNXoiIGZpbGw9IiMyMDM1MmIiLz48L3N2Zz4K" alt="" width="42" height="42"><strong>InsightFlow</strong>${tag('MVP 交互演示','green')}</div><p>为软件 App 产品经理与独立开发者设计，把零散用户反馈整理为可核查、可跟进的需求。</p><ol class="about-list"><li>示例项目与反馈均为合成数据；预设分类不是实际 AI 运行结果。</li><li>上传文件只在浏览器解析；“模拟分类”使用关键词规则，不调用 DeepSeek。</li><li>审核与需求变化保存在本机浏览器，不跨设备同步，清理站点数据会丢失。</li><li>静态演示不要求登录、不含密钥；本地后台可显式启用真实 AI，发送前需确认，调用可能产生费用。</li><li>真实服务端 AI 接入属于完整版本；此页面不声称实现服务器队列、多账号或云端存储。</li></ol><div class="form-actions">${btn('backup','导出浏览器数据','secondary')}${btn('close','开始探索','primary')}</div>`);}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-action]');if(!b||b.disabled)return;
+  const action=b.dataset.action,id=b.dataset.id;
+  attempt(()=>{
+    const p=projectOf(state);
+    if(action==='close'){if(!formDirty || window.confirm('有未保存的修改，确认放弃并关闭？')){formDirty=false;modal.close();}}
+    else if(action==='ai-settings')aiSettings();
+    else if(action==='refresh-ai')refreshBackend().then(()=>{aiSettings();render();});
+    else if(action==='real-ai')startRealAi();
+    else if(action==='confirm-real-ai')runRealAi().catch(formError);
+    else if(action==='stop-real-ai'){if(realAiRun){realAiRun.stop=true;toast('将完成当前请求后停止，当前请求可能已产生费用。');}}
+    else if(action==='about')about();
+    else if(action==='import')openImport();
+    else if(action==='detail')openDetail(id);
+    else if(action==='nav-topics')go('topics');
+    else if(action==='nav-feedback')go('feedback');
+    else if(action==='review-pending')go('feedback',{review:'pending'});
+    else if(action==='scope-all'||action==='scope-reviewed'){const query=Object.fromEntries(route().params);delete query.scope;if(action==='scope-reviewed')query.scope='reviewed';go('overview',query);}
+    else if(action==='topic-feedback')go('feedback',{...Object.fromEntries(route().params),topic:id});
+    else if(action==='clear-filters')go(route().name==='overview'?'overview':'feedback');
+    else if(action==='clear-requirement-filters')go('requirements');
+    else if(action==='select-visible'){filtered().slice((page-1)*20,page*20).forEach(f=>selected.add(f.id));render();}
+    else if(action==='prev-page'){page=Math.max(1,page-1);render();}
+    else if(action==='next-page'){page++;render();}
+    else if(action==='confirm-topic'){const topic=p.topics.find(t=>t.id===id);commit(p=>setTopicStatus(p,id,topic.revision||0,'confirmed'));render();toast('主题已确认，关联反馈仍需分别审核。');}
+    else if(action==='edit-topic')panels.topicEditor(id);
+    else if(action==='archive-topic'||action==='restore-topic')panels.topicStatus(id,Number(b.dataset.revision),action==='archive-topic'?'archived':'confirmed');
+    else if(action==='edit-requirement')panels.requirementEditor(id);
+    else if(action==='import-history')panels.history();
+    else if(action==='import-history-detail')panels.historyDetail(id);
+    else if(action==='analysis-history')panels.analysisHistory();
+    else if(action==='analysis-history-detail')panels.analysisHistoryDetail(id);
+    else if(action==='restore-backup')panels.restore();
+    else if(action==='batch-confirm'){
+      if(!selected.size||selected.size>200)throw new Error('请选择 1—200 条待审核反馈。');
+      const ids=[...selected];commit(p=>{for(const id of ids){const f=p.feedback.find(f=>f.id===id);if(!f||f.review!=='pending'||f.analysisStatus!=='succeeded')throw new Error('选择中含非待审核或未分析反馈，请重新选择。');reviewFeedback(p,id,f.revision,'confirmed');}});selected.clear();render();toast('所选反馈已确认。');
+    }
+    else if(action==='reject-feedback'){commit(p=>reviewFeedback(p,id,Number(b.dataset.revision),'rejected'));modal.close();render();toast('已拒绝分类，原文保留。');}
+    else if(action==='new-requirement'){go('feedback');toast('请勾选来源反馈，再点击“转为需求”。');}
+    else if(action==='selected-requirement')openRequirement([...selected]);
+    else if(action==='topic-requirement')openRequirement(p.feedback.filter(f=>f.topicId===id&&effective(f)).map(f=>f.id));
+    else if(action==='requirement-detail')requirementDetail(id);
+    else if(action==='import-remap')showMapping();
+    else if(action==='confirm-import'){b.disabled=true;try{confirmImport();}catch(error){b.disabled=false;throw error;}}
+    else if(action==='simulate')simulate();
+    else if(action==='show-imported'){modal.close();go('feedback');}
+    else if(action==='import-errors'){if(!importData?.results)throw new Error('没有可导出的错误。');const rows=importData.results.filter(r=>r.status==='invalid');download('insightflow-import-errors.csv','\uFEFF'+[['原记录号','错误原因','原始内容'],...rows.map(r=>[r.recordNo,r.errors.join('；'),r.values?.raw_text||''])].map(row=>row.map(escapeCsvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
+    else if(action==='backup'){let raw;try{raw=localStorage.getItem(STORAGE_KEY);}catch{}download('insightflow-demo-backup.json',raw||JSON.stringify(state,null,2));toast('备份含本机反馈原文，请妥善保管。');}
+    else if(action==='reset'){openModal('重置当前浏览器的演示？','<p>将清除所有演示项目、导入反馈和需求，恢复初始示例。可以先导出备份。</p><div class="form-actions">'+btn('backup','先导出备份','secondary')+btn('reset-confirm','确认重置','primary')+'</div>');}
+    else if(action==='reset-confirm'){const next=initialState();saveState(localStorage,next);state=next;storageError='';storageCorrupt=false;selected.clear();modal.close();go('overview');toast('演示已重置。');}
+    else if(action==='new-project'){
+      openModal('创建 App 项目','<form id="project-form"><label>项目名称<input name="name" required maxlength="80" placeholder="例如：我的 App"></label><label>App 名称<input name="appName" required maxlength="120" placeholder="产品名称"></label><p class="footnote">新项目独立保存反馈、主题和需求，仍属于当前浏览器内的演示数据。</p><div class="form-actions"><button class="btn primary" type="submit">创建项目</button></div></form>');
+      $('#project-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));if(!data.name.trim()||!data.appName.trim())throw new Error('名称不能全为空白。');commit((_p,s)=>{const id=uid();s.projects.push({id,name:data.name.trim(),appName:data.appName.trim(),feedback:[],topics:[],requirements:[],imports:[],isSample:false});s.activeProjectId=id;});modal.close();go('overview');});});
+    }
+  });
+});
+
+window.addEventListener('hashchange',()=>{selected.clear();page=1;render();});
+modal.addEventListener('input',()=>{formDirty=true;});
+modal.addEventListener('cancel',e=>{if(formDirty&&!window.confirm('有未保存的修改，确认放弃并关闭？'))e.preventDefault();});
+modal.addEventListener('close',()=>{formDirty=false;if(realAiRun&&!realAiRun.confirmed)realAiRun=null;});
+window.addEventListener('beforeunload',e=>{if((modal.open&&formDirty)||realAiRun?.confirmed){e.preventDefault();e.returnValue='';}});
+window.addEventListener('pagehide',()=>{if(realAiRun?.confirmed){try{commit((_p,s)=>{const log=s.projects.find(p=>p.id===realAiRun.projectId)?.analysisRuns.find(r=>r.id===realAiRun.journalId);if(log){log.status='interrupted';for(const i of log.items){if(i.status==='running')i.status='unknown';else if(i.status==='queued')i.status='not_started';}}});}catch{}}});
+setInterval(()=>{if(!realAiRun?.confirmed&&!storageCorrupt){const next=structuredClone(state);if(recoverInterruptedRuns(next)){try{saveState(localStorage,next);state=next;render();}catch(e){toast(e.message);}}}},30_000);
+window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){try{state=loadState(localStorage);selected.clear();modal.close();render();toast('检测到另一标签页的数据变化，已刷新。');}catch(error){storageError=error.message;storageCorrupt=true;render();}}});
+render();
+refreshBackend().then(render);
+
+return {};
+})();
+</script>
+</body>
+</html>
