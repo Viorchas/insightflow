@@ -764,12 +764,19 @@ function createPanels({getState,setState,commit,openModal,modal,esc,btn,tag,rend
 
 return {createPanels};
 })();
+__modules["cloud-config.mjs"] = (()=>{
+// Public endpoint only. Provider credentials must never be placed in this file.
+const CLOUD_API_BASE = 'https://insightflow-api.viorchas.workers.dev';
+
+return {CLOUD_API_BASE};
+})();
 __modules["app.mjs"] = (()=>{
 const { parseCsv, validateRows, escapeCsvCell } = __modules["domain/csv.js"];
 const { assertTransition, normalizeTopicName } = __modules["domain/workflow.js"];
 const { initialState, projectOf, effective, isReviewed, classifyMock, reviewFeedback, createRequirement, saveState, loadState, uid, STORAGE_KEY } = __modules["demo-model.mjs"];
 const { setTopicStatus, matchesFeedback, recoverInterruptedRuns } = __modules["workspace.mjs"];
 const { createPanels } = __modules["panels.mjs"];
+const { CLOUD_API_BASE } = __modules["cloud-config.mjs"];
 
 const $ = (s, root = document) => root.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -796,31 +803,34 @@ catch (e) { state = initialState(); storageError = e.message; storageCorrupt = t
 let selected = new Set(), page = 1, importData = null, formDirty = false;
 let backend = { mode: 'static', configured: false, model: 'deepseek-flash', csrfToken: '' };
 let realAiRun = null;
+const apiBase = ['localhost','127.0.0.1'].includes(location.hostname) ? '.' : CLOUD_API_BASE;
 const modal = $('#modal');
 const panels=createPanels({getState:()=>state,setState:value=>{state=value;storageCorrupt=false;storageError='';selected.clear();},commit,openModal,modal,esc,btn,tag,render,toast,formError,isBusy:()=>Boolean(realAiRun?.confirmed)});
 
 async function refreshBackend() {
   try {
-    const response = await fetch('./api/v1/config', { signal: AbortSignal.timeout(4000), cache: 'no-store' });
+    const response = await fetch(`${apiBase}/api/v1/config`, { signal: AbortSignal.timeout(8000), cache: 'no-store', credentials:'omit' });
     if (!response.ok) throw new Error('unavailable');
     const body = await response.json();
-    if (body.data?.mode !== 'local' || typeof body.data.csrfToken !== 'string') throw new Error('unsupported');
+    if (!['local','cloud'].includes(body.data?.mode) || typeof body.data.csrfToken !== 'string') throw new Error('unsupported');
     backend = body.data;
   } catch { backend = { mode: 'static', configured: false, model: 'deepseek-flash', csrfToken: '' }; }
 }
 
 function aiSettings() {
-  const local = backend.mode === 'local';
-  openModal('真实 AI 连接状态', `<div class="detail-meta">${tag(local ? '本地后台已连接' : '静态演示模式',local?'green':'amber')}${tag(backend.configured?'密钥已配置':'未配置密钥',backend.configured?'green':'amber')}</div><p>供应商：DeepSeek · 模型：${esc(backend.model)}</p><p>${local ? '在项目根目录 .env 填写 DEEPSEEK_API_KEY，随后重启本地服务。网页只读取配置状态，不会读取或展示密钥。' : '当前网址没有可用的本地分析后台。GitHub Pages 保持免费演示；真实 AI 需要通过本机服务启动。'}</p><div class="notice-inline">真实分析会把脱敏后的所选反馈发送到 DeepSeek，并可能消耗账户余额。示例预设与关键词模拟继续独立标记；不会自动调用真实服务。</div><div class="form-actions">${btn('refresh-ai','重新检查配置','secondary')}${btn('close','知道了','primary')}</div>`);
+  const local = backend.mode === 'local', cloud = backend.mode === 'cloud';
+  openModal('真实 AI 连接状态', `<div class="detail-meta">${tag(local ? '本地后台已连接' : cloud ? '云端接口已连接' : '暂未连接 AI 接口',(local||cloud)?'green':'amber')}${tag(backend.configured?'真实 AI 已启用':'真实 AI 暂未启用',backend.configured?'green':'amber')}</div><p>供应商：DeepSeek · 模型：${esc(backend.model)}</p><p>${local ? '本地服务使用 .env 中的密钥；页面只读取启用状态，不读取或展示密钥。' : cloud ? '真实分析由云端接口转发，密钥只保存在服务端。每次 1 条、最多 1,500 字符；每个访问地址每天 3 次，全站每天 10 次，累计 20 次后暂停。失败和超时可能消耗体验次数，不自动重试。' : '暂时无法连接真实 AI 接口。已有数据和明确标记的模拟分析仍可使用，真实分析不会静默降级。'}</p><div class="notice-inline">免费指网页和接口托管。真实分析会将脱敏后的所选反馈发送至服务端和 DeepSeek，并消耗作者的 API 额度；发送前需确认。</div><div class="form-actions">${btn('refresh-ai','重新检查连接','secondary')}${btn('close','知道了','primary')}</div>`);
 }
 
 function startRealAi() {
   if (realAiRun) return toast('已有真实分析正在进行，请等待或停止后续请求。');
-  if (!backend.configured || backend.mode !== 'local') return aiSettings();
+  if (!backend.configured || !['local','cloud'].includes(backend.mode)) return aiSettings();
   const p=projectOf(state), ids=[...selected];
-  if (!ids.length || ids.length>10) throw new Error('请先选择 1—10 条待审核反馈。');
+  const maxBatch=backend.mode==='cloud'?1:10;
+  if (!ids.length || ids.length>maxBatch) throw new Error(`请先选择 1—${maxBatch} 条待审核反馈。`);
   const fs=ids.map(id=>p.feedback.find(f=>f.id===id));
   if (fs.some(f=>!f||f.review!=='pending')) throw new Error('只允许分析待审核反馈，人工确认、修改或拒绝的结果不会被覆盖。');
+  if(backend.mode==='cloud' && (fs.some(f=>[...f.content].length>1500)||p.topics.filter(t=>t.status==='confirmed').length>30))throw new Error('公开真实 AI 体验仅支持不超过 1,500 字符的反馈和最多 30 个已确认主题，原文不会被截断。');
   openModal('确认发送至 DeepSeek',`<p>将分析 ${fs.length} 条反馈，使用 ${esc(backend.model)}。邮箱和手机号会做基础脱敏，但不能保证识别全部个人信息，请确认有权处理这些内容。</p><p>每条发送一次请求，本轮不自动付费重试。失败条目保留原因，可由你明确选择后重试。</p><div class="source-list">${fs.map(f=>`<div><p>${esc(f.content)}</p></div>`).join('')}</div><div class="form-actions">${btn('close','取消','secondary')}${btn('confirm-real-ai','确认发送并分析','primary')}</div>`);
   realAiRun={projectId:p.id, items:fs.map(f=>({id:f.id,revision:f.revision,content:f.content})),confirmed:false,stop:false,done:0,failed:0};
 }
@@ -840,7 +850,7 @@ async function runRealAi() {
       const topics=project.topics.filter(t=>t.status==='confirmed').map(t=>({id:t.id,name:t.name}));
       try {
         commit((_p,s)=>{const log=s.projects.find(p=>p.id===run.projectId).analysisRuns.find(r=>r.id===run.journalId);log.updatedAt=new Date().toISOString();log.items.find(i=>i.id===item.id).status='running';});
-        const response=await fetch('./api/v1/analyze',{method:'POST',headers:{'Content-Type':'application/json','x-insightflow-token':backend.csrfToken},body:JSON.stringify({content:item.content,topics}),signal:AbortSignal.timeout(50_000)});
+        const response=await fetch(`${apiBase}/api/v1/analyze`,{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json','x-insightflow-token':backend.csrfToken},body:JSON.stringify({content:item.content,topics,requestId:uid()}),signal:AbortSignal.timeout(50_000)});
         const body=await response.json();
         if(!response.ok){const error=new Error(body.error?.message||'分析请求失败');error.code=body.error?.code;throw error;}
         const result=body.data;
@@ -861,7 +871,7 @@ async function runRealAi() {
         run.failed++;
         const message=error.name==='TimeoutError'?'请求超时；本地未保存结果，供应商可能已处理。重试可能再次消耗额度。':error.message;
         try {commit((_p,s)=>{const p=s.projects.find(p=>p.id===run.projectId);const log=p.analysisRuns.find(r=>r.id===run.journalId).items.find(i=>i.id===item.id);log.status='failed';log.error=message;const f=p.feedback.find(f=>f.id===item.id);if(f&&f.revision===item.revision){f.lastAiError=message;if(f.analysisStatus!=='succeeded')f.analysisStatus='failed';}});} catch(storageFailure){run.stop=true;toast(storageFailure.message);}
-        if(['AI_AUTH_ERROR','AI_NOT_CONFIGURED','INVALID_SESSION','AI_RATE_LIMITED','LOCAL_RATE_LIMIT'].includes(error.code))run.stop=true;
+        if(['AI_AUTH_ERROR','AI_NOT_CONFIGURED','INVALID_SESSION','AI_RATE_LIMITED','LOCAL_RATE_LIMIT','DEMO_QUOTA_LIMIT'].includes(error.code))run.stop=true;
       }
       const progress=$('#real-progress');if(progress)progress.textContent=`成功 ${run.done} 条 · 失败 ${run.failed} 条 · 总计 ${run.items.length} 条`;
       render();
@@ -905,7 +915,7 @@ function render() {
     <div class="workspace-label">当前项目 <span>PROJECT</span></div><label class="project-select"><span class="project-icon">${esc(p.name[0])}</span><select id="project-select" aria-label="切换项目">${state.projects.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>${icon('down')}</label>
     <nav>${nav.map(([key, ico, title]) => `<a href="#${key}" class="nav-item ${name === key ? 'active' : ''}">${icon(ico)}${title}${key === 'feedback' ? `<small>${p.feedback.length}</small>` : key === 'requirements' ? `<small>${p.requirements.length}</small>` : ''}</a>`).join('')}</nav>
     <button class="new-project" data-action="new-project">${icon('plus')} 创建新项目</button>
-    <div class="sidebar-bottom"><div class="demo-card"><span class="live-dot"></span> 公开交互演示<p>示例数据 · 本机保存<br>${backend.configured ? '真实分析需确认 · 可能计费' : '演示不调用付费 AI'}</p>${btn('about', '了解演示模式 '+icon('arrow'), 'text')}</div><div class="profile"><span class="avatar">访</span><div>访客体验<small>无需注册，即刻探索</small></div></div></div></aside>
+    <div class="sidebar-bottom"><div class="demo-card"><span class="live-dot"></span> 公开交互演示<p>示例数据 · 本机保存<br>${backend.configured ? '真实分析需确认 · 可能计费' : '真实 AI 暂未连接或启用'}</p>${btn('about', '了解演示模式 '+icon('arrow'), 'text')}</div><div class="profile"><span class="avatar">访</span><div>访客体验<small>无需注册，即刻探索</small></div></div></div></aside>
     <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}</div></header>
     <div class="content">${storageError ? `<div class="alert">${esc(storageError)} ${btn('backup', '导出原始备份', 'text')} ${btn('reset', '重置演示', 'text')}</div>` : ''}
     <div class="page-heading"><div><div class="eyebrow">${esc(p.appName)} <span> / </span> FEEDBACK WORKSPACE</div><h1>${{ overview: '让反馈，成为下一步。', feedback: '每条反馈，都有迹可循。', topics: '从零散声音，到共性问题。', requirements: '让洞察，走向行动。' }[name]}</h1><p>${{ overview: '发现用户关注的问题，从原文证据出发，做出有依据的产品判断。', feedback: '阅读原文、核查分析建议，将有价值的反馈关联到需求。', topics: '查看相似反馈的聚合结果，确认主题后再用于产品决策。', requirements: '记录产品判断，保留来源证据，持续跟进处理状态。' }[name]}</p></div>${name === 'requirements' ? btn('new-requirement', icon('plus')+'创建需求', 'primary') : btn('import', icon('upload')+'导入反馈', 'primary')}</div>
@@ -994,7 +1004,7 @@ function requirementDetail(id) {
 
 function openImport() {
   importData=null;
-  openModal('导入用户反馈',`<div class="import-steps"><b>01 选择文件</b><span>02 映射与校验</span><span>03 导入结果</span></div><div class="upload-area">${icon('upload')}<h3>把用户声音带进工作区</h3><p>UTF-8 CSV · 最多 5 MiB / 2,000 行 / 50 列</p><label class="btn primary file-label">选择 CSV 文件<input id="file-input" type="file" accept=".csv,text/csv"></label><a class="link" href="data:text/csv;charset=utf-8;base64,5q2j5paHLOadpea6kCzlpJbpg6hJRCzlubPlj7As6K+E5YiGLOWPjemmiOaXtumXtCxBcHDniYjmnKwKQWdlbnQg5L+u5pS55Luj56CB5YmN5biM5pyb5Y+v5Lul6YCQ5paH5Lu26aKE6KeI5beu5byCLOS6p+WTgeWGheWPjemmiCxjaGF0YWdlbnQtZGVtby0xMDEsV2luZG93cywzLDIwMjYtMTAtMTYsMS4wLjAK6ZW/5a+56K+d57uP5bi45b+Y6K6w5oiR5YmN6Z2i5oyH5a6a55qE5oqA5pyv5qCILOW8gOWPkeiAheekvuWMuixjaGF0YWdlbnQtZGVtby0xMDIsbWFjT1MsMiwyMDI2LTEwLTE3LDEuMC4wCuS4iuS8oCBQREYg5ZCO5biM5pyb6IO955yL5Yiw562U5qGI5a+55bqU55qE6aG156CBLOeUqOaIt+iuv+iwiCxjaGF0YWdlbnQtZGVtby0xMDMsV2ViLDQsMjAyNi0xMC0xOFQxMDowMDowMCswODowMCwxLjAuMQrpop3luqbkuI3otrPml7bluIzmnJvmj5DliY3mj5DphpLlubbkv53lrZjku7vliqHov5vluqYs5Lqn5ZOB5YaF5Y+N6aaILGNoYXRhZ2VudC1kZW1vLTEwNCxXZWIsMiwyMDI2LTEwLTE4LDEuMC4xCuaWsOeJiOacrOW8gOWni+i+k+WHuuabtOW/q+S6humYheivu+W+iOa1geeVhSxBcHAg5ZWG5bqXLGNoYXRhZ2VudC1kZW1vLTEwNSxBbmRyb2lkLDUsMjAyNi0xMC0xOSwxLjAuMQrlm57nrZTmj5DkvpvnmoTmjqXlj6PkuI3lrZjlnKjluIzmnJvkuI3noa7lrprml7bor7TmmI4s5byA5Y+R6ICF56S+5Yy6LGNoYXRhZ2VudC1kZW1vLTEwNixXZWIsMSwsMS4wLjEK" download>下载示例 CSV</a></div><div class="notice-inline">文件仅在当前浏览器解析。请勿导入敏感或无权处理的数据；免费演示不会把文件发送给 AI 服务。</div>`,true);
+  openModal('导入用户反馈',`<div class="import-steps"><b>01 选择文件</b><span>02 映射与校验</span><span>03 导入结果</span></div><div class="upload-area">${icon('upload')}<h3>把用户声音带进工作区</h3><p>UTF-8 CSV · 最多 5 MiB / 2,000 行 / 50 列</p><label class="btn primary file-label">选择 CSV 文件<input id="file-input" type="file" accept=".csv,text/csv"></label><a class="link" href="data:text/csv;charset=utf-8;base64,5q2j5paHLOadpea6kCzlpJbpg6hJRCzlubPlj7As6K+E5YiGLOWPjemmiOaXtumXtCxBcHDniYjmnKwKQWdlbnQg5L+u5pS55Luj56CB5YmN5biM5pyb5Y+v5Lul6YCQ5paH5Lu26aKE6KeI5beu5byCLOS6p+WTgeWGheWPjemmiCxjaGF0YWdlbnQtZGVtby0xMDEsV2luZG93cywzLDIwMjYtMTAtMTYsMS4wLjAK6ZW/5a+56K+d57uP5bi45b+Y6K6w5oiR5YmN6Z2i5oyH5a6a55qE5oqA5pyv5qCILOW8gOWPkeiAheekvuWMuixjaGF0YWdlbnQtZGVtby0xMDIsbWFjT1MsMiwyMDI2LTEwLTE3LDEuMC4wCuS4iuS8oCBQREYg5ZCO5biM5pyb6IO955yL5Yiw562U5qGI5a+55bqU55qE6aG156CBLOeUqOaIt+iuv+iwiCxjaGF0YWdlbnQtZGVtby0xMDMsV2ViLDQsMjAyNi0xMC0xOFQxMDowMDowMCswODowMCwxLjAuMQrpop3luqbkuI3otrPml7bluIzmnJvmj5DliY3mj5DphpLlubbkv53lrZjku7vliqHov5vluqYs5Lqn5ZOB5YaF5Y+N6aaILGNoYXRhZ2VudC1kZW1vLTEwNCxXZWIsMiwyMDI2LTEwLTE4LDEuMC4xCuaWsOeJiOacrOW8gOWni+i+k+WHuuabtOW/q+S6humYheivu+W+iOa1geeVhSxBcHAg5ZWG5bqXLGNoYXRhZ2VudC1kZW1vLTEwNSxBbmRyb2lkLDUsMjAyNi0xMC0xOSwxLjAuMQrlm57nrZTmj5DkvpvnmoTmjqXlj6PkuI3lrZjlnKjluIzmnJvkuI3noa7lrprml7bor7TmmI4s5byA5Y+R6ICF56S+5Yy6LGNoYXRhZ2VudC1kZW1vLTEwNixXZWIsMSwsMS4wLjEK" download>下载示例 CSV</a></div><div class="notice-inline">文件仅在当前浏览器解析。请勿导入敏感或无权处理的数据；导入不会自动发送给 AI；仅在你选择反馈并确认真实分析后，才发送所选的脱敏正文。</div>`,true);
   $('#file-input').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(!file.name.toLowerCase().endsWith('.csv'))throw new Error('请选择 .csv 文件。');if(file.size>5*1024*1024)throw new Error('文件不能超过 5 MiB。');const bytes=new Uint8Array(await file.arrayBuffer());const table=parseCsv(bytes);const hash=await crypto.subtle.digest('SHA-256',bytes);importData={table,fileName:file.name,fileHash:Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join(''),projectId:projectOf(state).id};showMapping();}catch(e){formError(e);}});
 }
 function showMapping() {
@@ -1024,7 +1034,7 @@ function simulate() {
   modal.close();go('feedback');toast('模拟分类完成，结果仍待人工审核。');
 }
 function download(name,content,type='application/json') {const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-function about() {openModal('关于这份公开演示',`<div class="about-logo"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTIiIGZpbGw9IiNiOWVkOGIiLz48cGF0aCBkPSJNMTEgMTJoOHY3aDEwdjlIMTF6IiBmaWxsPSIjMjAzNTJiIi8+PHBhdGggZD0iTTI0IDEwaDV2NWgtNXoiIGZpbGw9IiMyMDM1MmIiLz48L3N2Zz4K" alt="" width="42" height="42"><strong>InsightFlow</strong>${tag('MVP 交互演示','green')}</div><p>为软件 App 产品经理与独立开发者设计，把零散用户反馈整理为可核查、可跟进的需求。</p><ol class="about-list"><li>示例项目与反馈均为合成数据；预设分类不是实际 AI 运行结果。</li><li>上传文件只在浏览器解析；“模拟分类”使用关键词规则，不调用 DeepSeek。</li><li>审核与需求变化保存在本机浏览器，不跨设备同步，清理站点数据会丢失。</li><li>静态演示不要求登录、不含密钥；本地后台可显式启用真实 AI，发送前需确认，调用可能产生费用。</li><li>真实服务端 AI 接入属于完整版本；此页面不声称实现服务器队列、多账号或云端存储。</li></ol><div class="form-actions">${btn('backup','导出浏览器数据','secondary')}${btn('close','开始探索','primary')}</div>`);}
+function about() {openModal('关于这份公开演示',`<div class="about-logo"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTIiIGZpbGw9IiNiOWVkOGIiLz48cGF0aCBkPSJNMTEgMTJoOHY3aDEwdjlIMTF6IiBmaWxsPSIjMjAzNTJiIi8+PHBhdGggZD0iTTI0IDEwaDV2NWgtNXoiIGZpbGw9IiMyMDM1MmIiLz48L3N2Zz4K" alt="" width="42" height="42"><strong>InsightFlow</strong>${tag('MVP 交互演示','green')}</div><p>为软件 App 产品经理与独立开发者设计，把零散用户反馈整理为可核查、可跟进的需求。</p><ol class="about-list"><li>示例项目与反馈均为合成数据；预设分类不是实际 AI 运行结果。</li><li>上传文件只在浏览器解析；“模拟分类”使用关键词规则，不调用 DeepSeek。</li><li>审核与需求变化保存在本机浏览器，不跨设备同步，清理站点数据会丢失。</li><li>静态演示不要求登录、不含密钥；云端或本地接口可显式启用真实 AI；发送前需确认，调用会消耗作者的额度。</li><li>云端接口只负责限额与真实 AI 分析；反馈仍存当前浏览器，尚无后台队列、多账号或跨设备同步。</li></ol><div class="form-actions">${btn('backup','导出浏览器数据','secondary')}${btn('close','开始探索','primary')}</div>`);}
 
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-action]');if(!b||b.disabled)return;
