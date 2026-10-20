@@ -24,6 +24,13 @@
 .journey-card{border:1px solid #d4dfce;border-radius:12px;background:#f4f8ef;padding:20px 24px;margin:0 0 20px}.journey-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.journey-eyebrow{font-size:10px;letter-spacing:1px;color:#718568}.journey-head h2{font-size:18px;font-weight:600;margin:6px 0 12px;color:#34502d}.journey-card>p{font-size:12px;line-height:1.8;color:#65715f}.journey-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.journey-step{display:flex;gap:12px}.journey-step>span{font-size:12px;color:#638354;flex-shrink:0;padding-top:3px}.journey-step h3{margin:0;font-size:13px;color:#3d5735}.journey-step p{font-size:11px;line-height:1.7;margin:7px 0;color:#65715f}.journey-step .btn{padding-left:0}.journey-actions{display:flex;gap:12px;flex-wrap:wrap}.data-context{display:flex;flex-direction:column;gap:5px;padding:13px 16px;border-left:3px solid #abc591;background:#f4f5f0;margin-bottom:20px;font-size:11px;line-height:1.7;color:#65715f}.data-context strong{font-size:12px;color:#425c37}.scope-caption{font-size:11px;line-height:1.8;color:#68775f;margin:12px 0}.chart-scope{font-size:10px;line-height:1.7;color:#6c7766;margin:0;padding:0 24px 14px}.ai-operation{border:1px solid #d6dfd1;border-radius:9px;background:#f7f9f3;padding:14px 18px;margin:16px 0}.ai-operation-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.ai-operation strong{font-size:12px;color:#3e5e33}.ai-operation p,.ai-operation summary{font-size:11px;line-height:1.8;color:#65715f;margin:6px 0}.ai-operation summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}.ai-operation p .btn{padding:0 6px}.ai-operation details[open]{border-top:1px solid #dce3d6;padding-top:8px;margin-top:8px}.btn:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:900px){.journey-steps{grid-template-columns:1fr;gap:15px}.journey-step p{margin:4px 0}.journey-card{padding:18px}.journey-head h2{font-size:17px}}
 @media(max-width:650px){.journey-head{gap:8px}.journey-head>.btn{font-size:10px;white-space:nowrap}.journey-card{padding:15px}.journey-actions .btn{width:100%}.data-context{padding:11px;font-size:10px}.ai-operation{padding:12px}.ai-operation-head{align-items:flex-start}.ai-operation-head>.btn{font-size:10px;padding:0}.chart-scope{padding:0 17px 12px}}
+
+/* Manually triggered, read-only spotlight tour in the browser top layer. */
+dialog.guided-tour{position:fixed;inset:0;margin:0;padding:0;border:0;width:100vw;max-width:none;height:100dvh;max-height:none;background:transparent;overflow:hidden;color:#294436;box-shadow:none}
+dialog.guided-tour::backdrop{background:transparent}.tour-shade{position:fixed;background:rgba(13,31,25,.64);pointer-events:auto}.tour-highlight{position:fixed;border:2px solid #d8f19e;border-radius:9px;box-shadow:0 0 0 3px #d8f19e33;pointer-events:none}.tour-card{position:fixed;width:min(370px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;border:1px solid #d9e5d0;border-radius:14px;padding:21px 23px;background:#fffef9;box-shadow:0 14px 48px #09251945;z-index:2;box-sizing:border-box}.tour-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}.tour-progress{font-size:11px;font-weight:600;letter-spacing:.5px;color:#6a8056}.tour-close{background:transparent;border:0;padding:5px 0 5px 8px;font:inherit;font-size:12px;color:#65745c;cursor:pointer}.tour-card h2{font-size:19px;line-height:1.5;margin:16px 0 12px;color:#2f4f3a}.tour-card p{font-size:13px;line-height:1.9;color:#52664d;margin:0 0 14px}.tour-card .tour-note{font-size:11px;line-height:1.7;color:#7b8671;padding-top:12px;border-top:1px solid #e4eadc}.tour-actions{display:flex;justify-content:space-between;gap:12px;margin-top:17px}.tour-card button:focus-visible{outline:3px solid #769c50;outline-offset:3px}.tour-card .btn{font-size:12px;padding:9px 16px}
+@media(max-width:650px){.tour-card{padding:17px 19px}.tour-card h2{font-size:17px;margin:12px 0 9px}.tour-card p{font-size:12px;line-height:1.8}.tour-card .tour-note{font-size:10px}.tour-actions{margin-top:12px}}
+
+dialog.guided-tour::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
 </style>
 </head>
 <body>
@@ -771,6 +778,112 @@ function aiOperationStatus(project,backend,selected,esc,btn){
 
 return {guideState,markGuide,guideCard,sourceSummary,chartNote,aiOperationStatus};
 })();
+__modules["guided-tour.mjs"] = (()=>{
+const STEPS = [
+  { page:'overview', target:'.data-context', fallback:'.journey-card', title:'先认识数据来源', text:'这里分别说明原文来源与分析方式。chatagent 的预置反馈是合成数据，即使经过真实 AI 分析，也不代表真实用户调研。', empty:'当前项目还没有反馈，可以从后面的导入入口开始。' },
+  { page:'overview', target:'.analytics-grid .topic-panel', title:'读懂洞察的范围', text:'主题和情绪图表统计有效分类。日期、审核范围和图旁说明决定统计口径；尚未审核的建议需要先核查原文。' },
+  { page:'feedback', target:'.page-heading [data-action="import"]', title:'带入自己的反馈', text:'点击“导入反馈”可上传 CSV，经过字段映射、校验和预览后再保存。也可在列表上方手工录入。导入不会自动分析或扣费。' },
+  { page:'feedback', target:'#ai-operation-status', title:'分析前先看连接与限制', text:'勾选反馈后，通过“真实 AI 分析”提交；每次都会要求确认，可能消耗作者额度。这里说明连接、提交限制和失败处理。关键词模拟不调用模型。' },
+  { page:'feedback', target:'.feedback-content button', fallback:'.table-panel', title:'对照原文做人工审核', text:'点击反馈原文打开详情，核查摘要、主题、情绪和问题类型，再保存审核或拒绝分类。分类只是建议，不能直接当成结论。', empty:'当前项目还没有反馈。导入或录入并完成分类后，就可以在这里核查原文。' },
+  { page:'topics', target:'.topic-card', fallback:'.topic-cards', title:'确认主题再形成判断', text:'主题把相似反馈组织在一起。候选主题需要人工确认；主题卡片可查看关联反馈、管理主题，并从来源创建需求。', empty:'当前项目还没有主题。完成分类后，主题会在这里呈现。' },
+  { page:'requirements', target:'.page-heading [data-action="new-requirement"]', title:'把反馈变成有来源的需求', text:'创建需求会先引导你去反馈列表选择来源。保留原文快照，再记录问题、优先级与处理状态；决策理由、验收和效果验证可以逐步补充。' },
+  { page:'requirements', target:'.top-actions [data-action="restore-backup"]', title:'记得备份本机数据', text:'数据仅保存在当前浏览器，清理站点数据会丢失。通过“演示说明”导出 JSON 备份，再通过这里校验并恢复。指引结束后会回到你开始时的页面。' },
+];
+
+function createGuidedTour({ navigate, capture, restore, canStart, getProject }) {
+  let active=false, index=0, saved=null, dialog=null, frame=0, anchor=null;
+  const shades=[];
+  let ring, card, observer;
+  const clamp=(v,min,max)=>Math.min(Math.max(v,min),Math.max(min,max));
+
+  function position() {
+    frame=0;
+    if(!active||!dialog?.open)return;
+    const width=document.documentElement.clientWidth, height=window.innerHeight, gap=12;
+    const step=STEPS[index];
+    anchor=document.querySelector(step.target)||document.querySelector(step.fallback||step.target);
+    const rect=anchor?.getBoundingClientRect();
+    const visible=rect&&rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<height;
+    const box=visible?{left:clamp(rect.left-5,4,width-4),top:clamp(rect.top-5,4,height-4),right:clamp(rect.right+5,4,width-4),bottom:clamp(rect.bottom+5,4,height-4)}:null;
+    const sizes=box?[
+      [0,0,width,box.top],[0,box.bottom,width,height-box.bottom],
+      [0,box.top,box.left,box.bottom-box.top],[box.right,box.top,width-box.right,box.bottom-box.top],
+    ]:[[0,0,width,height],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    sizes.forEach(([x,y,w,h],i)=>Object.assign(shades[i].style,{left:`${x}px`,top:`${y}px`,width:`${w}px`,height:`${h}px`}));
+    ring.hidden=!box;
+    if(box)Object.assign(ring.style,{left:`${box.left}px`,top:`${box.top}px`,width:`${box.right-box.left}px`,height:`${box.bottom-box.top}px`});
+    const cw=card.offsetWidth,ch=card.offsetHeight;
+    let left=(width-cw)/2,top=(height-ch)/2;
+    if(box){
+      left=clamp(box.left,gap,width-cw-gap);
+      if(height-box.bottom>=ch+gap*2)top=box.bottom+gap;
+      else if(box.top>=ch+gap*2)top=box.top-ch-gap;
+      else if(width-box.right>=cw+gap*2){left=box.right+gap;top=clamp(box.top,gap,height-ch-gap);}
+      else if(box.left>=cw+gap*2){left=box.left-cw-gap;top=clamp(box.top,gap,height-ch-gap);}
+      else top=height-ch-gap;
+    }
+    Object.assign(card.style,{left:`${clamp(left,gap,width-cw-gap)}px`,top:`${clamp(top,gap,height-ch-gap)}px`});
+  }
+  function refresh(){if(active&&saved&&getProject().id!==saved.projectId){stop();return;}if(active&&!frame)frame=requestAnimationFrame(position);}
+
+  function show(next) {
+    index=next;
+    const step=STEPS[index];
+    navigate(step.page);
+    const empty=getProject().feedback.length===0;
+    card.querySelector('#tour-title').textContent=step.title;
+    card.querySelector('#tour-description').textContent=empty&&step.empty?step.empty:step.text;
+    card.querySelector('.tour-progress').textContent=`使用指引 · ${index+1} / ${STEPS.length}`;
+    card.querySelector('[data-tour="previous"]').disabled=index===0;
+    card.querySelector('[data-tour="next"]').textContent=index===STEPS.length-1?'完成指引':'下一步';
+    anchor=document.querySelector(step.target)||document.querySelector(step.fallback||step.target);
+    anchor?.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
+    if(anchor)window.scrollBy({top:-24,behavior:'instant'});
+    refresh();
+    card.querySelector('[data-tour="next"]').focus({preventScroll:true});
+  }
+
+  function stop() {
+    if(!active)return;
+    active=false;
+    cancelAnimationFrame(frame);frame=0;
+    observer?.disconnect();
+    window.removeEventListener('hashchange',stop);
+    window.removeEventListener('resize',refresh);
+    window.removeEventListener('scroll',refresh,true);
+    dialog.close();dialog.remove();dialog=null;
+    restore(saved);saved=null;
+  }
+
+  function start() {
+    if(active)return;
+    if(!canStart())return;
+    saved=capture();active=true;
+    dialog=document.createElement('dialog');
+    dialog.className='guided-tour';
+    dialog.setAttribute('aria-labelledby','tour-title');
+    dialog.setAttribute('aria-describedby','tour-description');
+    shades.length=0;
+    for(let i=0;i<4;i++){const shade=document.createElement('div');shade.className='tour-shade';shade.setAttribute('aria-hidden','true');dialog.append(shade);shades.push(shade);}
+    ring=document.createElement('div');ring.className='tour-highlight';ring.setAttribute('aria-hidden','true');dialog.append(ring);
+    card=document.createElement('section');card.className='tour-card';
+    card.innerHTML='<div class="tour-heading"><span class="tour-progress"></span><button type="button" class="tour-close" data-tour="close" aria-label="关闭使用指引">关闭 ×</button></div><h2 id="tour-title"></h2><p id="tour-description"></p><p class="tour-note">仅介绍操作，不会导入、审核或发起 AI 请求。随时按 Esc 退出。</p><div class="tour-actions"><button type="button" class="btn secondary" data-tour="previous">上一步</button><button type="button" class="btn primary" data-tour="next">下一步</button></div>';
+    dialog.append(card);document.body.append(dialog);
+    dialog.addEventListener('click',event=>{const action=event.target.closest('[data-tour]')?.dataset.tour;if(action==='close')stop();else if(action==='previous'&&index>0)show(index-1);else if(action==='next'){if(index===STEPS.length-1)stop();else show(index+1);}});
+    dialog.addEventListener('cancel',event=>{event.preventDefault();stop();});
+    dialog.addEventListener('keydown',event=>{if(event.key==='ArrowRight'){event.preventDefault();if(index<STEPS.length-1)show(index+1);}else if(event.key==='ArrowLeft'){event.preventDefault();if(index>0)show(index-1);}});
+    dialog.showModal();
+    window.addEventListener('hashchange',stop);
+    window.addEventListener('resize',refresh);
+    window.addEventListener('scroll',refresh,true);
+    observer=new ResizeObserver(refresh);observer.observe(document.querySelector('#app'));observer.observe(card);
+    show(0);
+  }
+  return {start,stop,refresh};
+}
+
+return {createGuidedTour};
+})();
 __modules["product-panels.mjs"] = (()=>{
 const { validateRows } = __modules["domain/csv.js"];
 const { projectOf, uid } = __modules["demo-model.mjs"];
@@ -898,6 +1011,7 @@ const { createPanels } = __modules["panels.mjs"];
 const { createProductPanels, requirementFields } = __modules["product-panels.mjs"];
 const { REQUIREMENT_FIELDS, requirementExtras } = __modules["workspace.mjs"];
 const { CLOUD_API_BASE } = __modules["cloud-config.mjs"];
+const { createGuidedTour } = __modules["guided-tour.mjs"];
 const { guideCard, guideState, markGuide, sourceSummary, chartNote, aiOperationStatus } = __modules["experience.mjs"];
 
 const $ = (s, root = document) => root.querySelector(s);
@@ -930,6 +1044,14 @@ const modal = $('#modal');
 const panels=createPanels({getState:()=>state,setState:value=>{state=value;storageCorrupt=false;storageError='';selected.clear();},commit,openModal,modal,esc,btn,tag,render,toast,formError,isBusy:()=>Boolean(realAiRun?.confirmed)});
 
 const products=createProductPanels({getState:()=>state,commit,openModal,modal,esc,btn,render,toast,formError,go,download});
+
+const tour=createGuidedTour({
+  getProject:()=>projectOf(state),
+  canStart:()=>{if(modal.open){toast('请先保存或关闭当前窗口，再打开使用指引。');return false;}if(realAiRun?.confirmed){toast('正在分析反馈，请等本轮完成后再打开指引。');return false;}return true;},
+  capture:()=>({hash:location.hash,ids:[...selected],page,scrollY:window.scrollY,projectId:projectOf(state).id}),
+  navigate:name=>{history.replaceState(null,'','#'+name);selected.clear();page=1;render();},
+  restore:saved=>{history.replaceState(null,'',saved.hash||'#overview');selected=projectOf(state).id===saved.projectId?new Set(saved.ids):new Set();page=saved.page;render();requestAnimationFrame(()=>{document.querySelector('[data-action="start-tour"]')?.focus({preventScroll:true});window.scrollTo({top:saved.scrollY,behavior:'instant'});});},
+});
 
 async function refreshBackend() {
   try {
@@ -1040,12 +1162,13 @@ function render() {
     <nav>${nav.map(([key, ico, title]) => `<a href="#${key}" class="nav-item ${name === key ? 'active' : ''}">${icon(ico)}${title}${key === 'feedback' ? `<small>${p.feedback.length}</small>` : key === 'requirements' ? `<small>${p.requirements.length}</small>` : ''}</a>`).join('')}</nav>
     <button class="new-project" data-action="new-project">${icon('plus')} 创建新项目</button>
     <div class="sidebar-bottom"><div class="demo-card"><span class="live-dot"></span> 公开交互演示<p>示例数据 · 本机保存<br>${backend.configured ? '真实分析需确认 · 可能计费' : '真实 AI 暂未连接或启用'}</p>${btn('about', '了解演示模式 '+icon('arrow'), 'text')}</div><div class="profile"><span class="avatar">访</span><div>访客体验<small>无需注册，即刻探索</small></div></div></div></aside>
-    <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}${btn('guide-show','上手路线','text')}</div></header>
+    <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}${btn('guide-show','上手路线','text')}${btn('start-tour','使用指引','text')}</div></header>
     <div class="content">${storageError ? `<div class="alert">${esc(storageError)} ${btn('backup', '导出原始备份', 'text')} ${btn('reset', '重置演示', 'text')}</div>` : ''}
     <div class="page-heading"><div><div class="eyebrow">${esc(p.appName)} <span> / </span> FEEDBACK WORKSPACE</div><h1>${{ overview: '让反馈，成为下一步。', feedback: '每条反馈，都有迹可循。', topics: '从零散声音，到共性问题。', requirements: '让洞察，走向行动。' }[name]}</h1><p>${{ overview: '发现用户关注的问题，从原文证据出发，做出有依据的产品判断。', feedback: '阅读原文、核查分析建议，将有价值的反馈关联到需求。', topics: '查看相似反馈的聚合结果，确认主题后再用于产品决策。', requirements: '记录产品判断，保留来源证据，持续跟进处理状态。' }[name]}</p></div>${name === 'requirements' ? btn('new-requirement', icon('plus')+'创建需求', 'primary') : btn('import', icon('upload')+'导入反馈', 'primary')}</div>
     ${guideCard(p,esc,btn)}${p.feedback.length?`<section class="data-context" aria-label="当前数据与分析来源"><strong>${p.isSample?'当前为演示项目，包含合成反馈':'当前为本机项目，数据真实性需核实'}</strong>${sourceSummary(p.feedback,esc)}</section>`:''}
     ${name === 'overview' ? overview(p, pending, params) : name === 'feedback' ? feedbackPage(p, params) : name === 'topics' ? topicsPage(p) : requirementsPage(p)}
     <footer><span>InsightFlow <b>·</b> 从用户声音，到产品行动</span><button data-action="reset" class="link">重置演示数据</button></footer></div></div>`;
+  tour.refresh();
   $('#project-select').addEventListener('change', e => attempt(() => { commit((_p, s) => { s.activeProjectId = e.target.value; }); go('overview'); }));
   const search = $('#search');
   if (search) search.addEventListener('change', () => updateFilter('q', search.value));
@@ -1187,6 +1310,7 @@ document.addEventListener('click',e=>{
     else if(action==='confirm-real-ai')runRealAi().catch(formError);
     else if(action==='stop-real-ai'){if(realAiRun){realAiRun.stop=true;toast('将完成当前请求后停止，当前请求可能已产生费用。');}}
     else if(action==='about')about();
+    else if(action==='start-tour')tour.start();
     else if(action==='guide-show'){markGuide(p.id,{hidden:false});render();}
     else if(action==='guide-skip'){markGuide(p.id,{hidden:true});render();}
     else if(action==='guide-explore'){markGuide(p.id,{explored:true});go('overview');}
