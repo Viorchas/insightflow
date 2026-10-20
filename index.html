@@ -18,6 +18,7 @@
 .date-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0;color:#84947c;font-size:11px}.date-filters label{display:flex;gap:8px;align-items:center}.date-filters input,.filterbar label>select{border:1px solid var(--border);background:white;padding:8px;border-radius:5px;color:#4f6847;font-size:11px}.date-filters>span{font-size:10px;color:#9aa78f}.top-actions{flex-wrap:wrap;justify-content:flex-end}.source-list label.checkbox-label{cursor:pointer}.table-scroll td small{display:block}hr{border:0;border-top:1px solid var(--border);margin:22px 0}.selection-bar>div{flex-wrap:wrap}
 @media(max-width:650px){.topbar{height:auto;min-height:55px;padding-top:7px;padding-bottom:7px;gap:12px}.top-actions{gap:9px}.top-actions .btn{font-size:9px}.date-filters>span{flex-basis:100%}.date-filters input{width:125px}.card-actions{gap:8px;flex-wrap:wrap}}
 @media(max-width:650px){.project-select{display:flex;margin:0 0 13px;padding:7px 10px}.project-select select{flex:1;width:auto}.new-project{display:flex;padding:8px 5px;margin:9px 0 0;border:0;font-size:10px}.sidebar .brand{margin-bottom:12px}}
+.filterbar{flex-wrap:wrap}.filterbar>label{display:flex;align-items:center;gap:7px;font-size:11px;color:#61715b}.filterbar label>select{max-width:210px}.modal-content details{border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin:15px 0;background:#fafbf8}.modal-content details summary{cursor:pointer;font-size:12px;color:#3b5a38;font-weight:600}.modal-content details[open] summary{margin-bottom:16px}.description-text{white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -560,6 +561,7 @@ function reviewFeedback(project, id, revision, action, changes = {}) {
 }
 
 function createRequirement(project, fields, ids, acknowledge = false) {
+  if(project.requirements.length>=2000)throw new Error('当前演示项目最多保留 2,000 个需求，请先备份并整理。');
   if (!fields.title?.trim() || [...fields.title.trim()].length > 120) throw new Error('请填写 1—120 字符的需求标题。');
   if ([...String(fields.description || '')].length > 5000) throw new Error('需求描述不能超过 5,000 字符。');
   if (!ids.length || ids.length > 200 || new Set(ids).size !== ids.length) throw new Error('请选择 1—200 条不重复的来源反馈。');
@@ -612,6 +614,17 @@ const normalized = text => text.normalize('NFKC').trim().replace(/\s+/gu,' ').to
 const text = (v,min,max) => typeof v==='string' && [...v.trim()].length>=min && [...v].length<=max;
 const id = v=>typeof v==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(v);
 function conflict(entity, revision) {if(!entity || (entity.revision||0)!==revision)throw new Error('内容已变化，请重新打开后操作。');}
+const REQUIREMENT_FIELDS = [
+  ['problemStatement','问题与目标',1000], ['decisionReason','决策理由',1000],
+  ['acceptanceCriteria','验收条件',3000], ['targetVersion','目标版本',80],
+  ['completionNote','完成说明',1000], ['verificationNote','效果验证记录',1000],
+];
+function requirementExtras(fields) {
+  const extra={};
+  for(const [key,label,max] of REQUIREMENT_FIELDS)if(key in fields){if(!text(fields[key],0,max))throw new Error(`${label}不能超过 ${max} 字符。`);extra[key]=fields[key].trim();}
+  if('verificationState' in fields){if(!['not_checked','checked','inconclusive'].includes(fields.verificationState))throw new Error('效果验证状态无效。');extra.verificationState=fields.verificationState;}
+  return extra;
+}
 function renameTopic(project, topicId, revision, name) {
   const topic=project.topics.find(t=>t.id===topicId);conflict(topic,revision);
   if(!text(name,2,30))throw new Error('主题名称需为 2—30 字符。');
@@ -633,7 +646,8 @@ function updateRequirement(project, reqId, revision, fields, sourceIds, acknowle
   if(additions.some(f=>!f||!effective(f)))throw new Error('新增来源不存在或没有有效分类。');
   if(additions.some(f=>!isReviewed(f))&&!acknowledge)throw new Error('新增来源包含未审核建议，请确认已查看原文。');
   const sources=sourceIds.map(id=>old.get(id)||snapshot(project.feedback.find(f=>f.id===id),project.topics));
-  Object.assign(req,{title:fields.title.trim(),description:fields.description||'',priority:fields.priority,sources,revision:req.revision+1,updatedAt:new Date().toISOString()});
+  const extra=requirementExtras(fields);
+  Object.assign(req,extra,{title:fields.title.trim(),description:fields.description||'',priority:fields.priority,sources,revision:req.revision+1,updatedAt:new Date().toISOString()});
 }
 function matchesFeedback(f, params) {
   const get=key=>params instanceof URLSearchParams?params.get(key):params[key];
@@ -641,6 +655,9 @@ function matchesFeedback(f, params) {
   if(get('topic')&&f.topicId!==get('topic'))return false;
   if(get('review')&&f.review!==get('review'))return false;
   if(get('analysis')&&f.analysisStatus!==get('analysis'))return false;
+  if(get('source')&&f.source!==get('source'))return false;
+  if(get('platform')&&f.platform!==get('platform'))return false;
+  if(get('appVersion')&&f.appVersion!==get('appVersion'))return false;
   if(get('scope')==='reviewed'&&!isReviewed(f))return false;
   if((get('topic')||get('scope'))&&!effective(f))return false;
   if(get('from')&&(!f.date||f.date<get('from')))return false;
@@ -677,6 +694,7 @@ function validateBackup(data) {
     }
     for(const r of p.requirements){
       if(!r||typeof r!=='object')fail();
+      try{requirementExtras(r);}catch{fail();}
       if(!text(r.title,1,120)||!text(r.description||'',0,5000)||!['unset','low','medium','high'].includes(r.priority)||!['pending','planned','in_progress','done','rejected'].includes(r.status)||!Number.isInteger(r.revision)||!Array.isArray(r.sources)||!r.sources.length||r.sources.length>200||!Number.isFinite(Date.parse(r.createdAt))||!unique(r.sources))fail();
       for(const s of r.sources)if(!p.feedback.some(f=>f.id===s.id)||!text(s.content,1,5000)||!text(s.topicName,1,30))fail();
     }
@@ -698,9 +716,57 @@ function mergeBackup(current, backup) {
   return next;
 }
 
-return {renameTopic,setTopicStatus,updateRequirement,matchesFeedback,recoverInterruptedRuns,validateBackup,mergeBackup};
+return {REQUIREMENT_FIELDS,requirementExtras,renameTopic,setTopicStatus,updateRequirement,matchesFeedback,recoverInterruptedRuns,validateBackup,mergeBackup};
+})();
+__modules["product-panels.mjs"] = (()=>{
+const { validateRows } = __modules["domain/csv.js"];
+const { projectOf, uid } = __modules["demo-model.mjs"];
+const { REQUIREMENT_FIELDS } = __modules["workspace.mjs"];
+
+function requirementFields(esc,values={}) {
+  return `<details><summary>补充决策、验收与验证记录</summary>${REQUIREMENT_FIELDS.map(([k,label,max])=>`<label>${label}${k==='targetVersion'?`<input name="${k}" maxlength="${max}" value="${esc(values[k]||'')}">`:`<textarea name="${k}" rows="2" maxlength="${max}">${esc(values[k]||'')}</textarea>`}</label>`).join('')}<label>效果验证<select name="verificationState">${[['not_checked','尚未验证'],['checked','已记录验证'],['inconclusive','暂不能判断']].map(([k,label])=>`<option value="${k}" ${(values.verificationState||'not_checked')===k?'selected':''}>${label}</option>`).join('')}</select></label><p class="footnote">完成开发与效果验证分别记录；验证内容由你填写，不自动推断业务收益。</p></details>`;
+}
+
+function createProductPanels({getState,commit,openModal,modal,esc,btn,render,toast,formError,go,download}) {
+  function manualFeedback(){
+    const projectId=projectOf(getState()).id;
+    openModal('手工录入反馈',`<form id="manual-feedback"><label>反馈原文<textarea name="content" rows="4" required maxlength="5000" placeholder="粘贴或输入一条有权处理的反馈"></textarea></label><div class="form-grid"><label>来源<input name="source" maxlength="80" placeholder="例如：产品内反馈"></label><label>来源中的记录 ID<input name="external_id" maxlength="200" placeholder="选填；填写后必须有来源"></label><label>平台<input name="platform" maxlength="40" placeholder="例如：Web / iOS"></label><label>App 版本<input name="app_version" maxlength="80" placeholder="例如：1.2.0"></label><label>反馈日期<input name="feedback_at" type="date"></label><label>评分（1—5，可小数）<input name="rating" type="number" min="1" max="5" step="any"></label></div><label class="checkbox-label"><input type="checkbox" name="allowSameContent">若已有相同正文，我确认这是一条独立反馈，仍需保存。</label><p class="footnote">保存后待分析，不自动调用 AI。相同来源 + 记录 ID 不重复保存；相同文字不代表同一个用户。</p><div class="form-actions">${btn('close','取消','secondary')}<button class="btn primary" type="submit">保存反馈</button></div></form>`,true);
+    document.querySelector('#manual-feedback').addEventListener('submit',event=>{
+      event.preventDefault();
+      try{
+        const fields=Object.fromEntries(new FormData(event.target)), names=['content','source','external_id','platform','app_version','feedback_at','rating'];
+        const result=validateRows({headers:names,rows:[names.map(k=>String(fields[k]||''))]},Object.fromEntries(names.map((k,i)=>[k,i])))[0];
+        if(result.status!=='valid')throw new Error(result.errors.join('；')||'请输入反馈正文。');
+        const v=result.values;
+        commit(p=>{
+          if(p.id!==projectId)throw new Error('当前项目已变化，请重新打开录入窗口。');
+          if(p.feedback.length>=10000)throw new Error('当前演示项目最多保留 10,000 条反馈，请先备份并整理数据。');
+          const key=v.external_id?JSON.stringify(['source',v.source,v.external_id]):null;
+          if(key&&p.feedback.some(f=>(f.keys||[]).includes(key)))throw new Error('该来源与记录 ID 已存在，未重复保存。');
+          if(!fields.allowSameContent&&p.feedback.some(f=>f.content.trim()===v.content))throw new Error('已有相同正文。若为独立反馈，请勾选确认后再保存。');
+          p.feedback.unshift({id:uid(),content:v.content,rawText:v.raw_text,source:v.source||'手工录入',externalId:v.external_id||null,platform:v.platform||'',appVersion:v.app_version||'',date:v.date,feedbackAt:v.feedback_at,rating:v.rating,topicId:null,sentiment:'uncertain',issueType:'uncertain',review:'pending',analysisStatus:'queued',origin:'待分析',revision:0,history:[],keys:key?[key]:[],createdAt:new Date().toISOString()});
+        });
+        modal.close();go('feedback',{analysis:'queued'});toast('反馈已保存到本机，尚未调用 AI。');
+      }catch(error){formError(error);}
+    });
+  }
+  function exportRequirement(id){
+    const p=projectOf(getState()),r=p.requirements.find(r=>r.id===id);if(!r)throw new Error('需求不存在。');
+    const literal=value=>String(value||'未填写').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const lines=[`# ${literal(r.title)}`, '',`项目：${literal(p.name)}`,`状态：${literal(r.status)}｜人工优先级：${literal(r.priority)}`,'','## 描述',literal(r.description)];
+    for(const [key,label] of REQUIREMENT_FIELDS)lines.push('',`## ${label}`,literal(r[key]));
+    lines.push('','## 效果验证状态',literal({not_checked:'尚未验证',checked:'已记录验证',inconclusive:'暂不能判断'}[r.verificationState||'not_checked']),'','## 关联来源快照');
+    r.sources.forEach((s,i)=>lines.push('',`### 来源 ${i+1}`,`主题：${literal(s.topicName)}｜来源类型：${literal(s.origin)}`,literal(s.content)));
+    lines.push('','---','导出自 InsightFlow 当前浏览器数据。示例项目与合成反馈不代表真实调研或业务成绩。');
+    download(`insightflow-requirement-${r.id}.md`,lines.join('\n'),'text/markdown;charset=utf-8');
+  }
+  return {manualFeedback,exportRequirement};
+}
+
+return {requirementFields,createProductPanels};
 })();
 __modules["panels.mjs"] = (()=>{
+const { requirementFields } = __modules["product-panels.mjs"];
 const { renameTopic, setTopicStatus, updateRequirement, validateBackup, mergeBackup } = __modules["workspace.mjs"];
 const { projectOf, effective, isReviewed, saveState } = __modules["demo-model.mjs"];
 
@@ -711,8 +777,8 @@ function createPanels({getState,setState,commit,openModal,modal,esc,btn,tag,rend
     if(!r)throw new Error('需求不存在。');
     const oldIds=new Set(r.sources.map(s=>s.id));
     const choices=[...r.sources.map(s=>({id:s.id,content:s.content,existing:true})),...p.feedback.filter(f=>effective(f)&&!oldIds.has(f.id)).map(f=>({...f,existing:false}))];
-    openModal('编辑需求与来源',`<form id="edit-requirement"><label>需求标题<input name="title" required maxlength="120" value="${esc(r.title)}"></label><label>需求描述<textarea name="description" rows="4" maxlength="5000">${esc(r.description)}</textarea></label><label>优先级<select name="priority">${[['unset','未设置'],['low','低'],['medium','中'],['high','高']].map(([v,l])=>`<option value="${v}" ${r.priority===v?'selected':''}>${l}</option>`).join('')}</select></label><h3 class="field-label">来源反馈（至少保留 1 条，最多 200 条）</h3><p class="footnote">保留的来源仍使用原快照；新增来源保存当前快照。取消勾选可移除关联，不删除原反馈。</p><div class="source-list">${choices.map(f=>`<div><label class="checkbox-label"><input type="checkbox" name="sources" value="${f.id}" ${f.existing?'checked':''}>${esc(f.content)}</label>${tag(f.existing?'已有来源快照':isReviewed(f)?'新增·已审核':'新增·未审核')}</div>`).join('')}</div><label class="checkbox-label"><input type="checkbox" name="acknowledge">若新增来源包含未审核建议，我已查看并确认关联。</label><div class="form-actions">${btn('close','取消','secondary')}<button type="submit" class="btn primary">保存需求与来源</button></div></form>`,true);
-    document.querySelector('#edit-requirement').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=new FormData(e.target);commit(p=>updateRequirement(p,id,r.revision,{title:data.get('title'),description:data.get('description'),priority:data.get('priority')},data.getAll('sources'),data.has('acknowledge')));modal.close();render();toast('需求内容与来源已保存。');});});
+    openModal('编辑需求与来源',`<form id="edit-requirement"><label>需求标题<input name="title" required maxlength="120" value="${esc(r.title)}"></label><label>需求描述<textarea name="description" rows="4" maxlength="5000">${esc(r.description)}</textarea></label><label>优先级<select name="priority">${[['unset','未设置'],['low','低'],['medium','中'],['high','高']].map(([v,l])=>`<option value="${v}" ${r.priority===v?'selected':''}>${l}</option>`).join('')}</select></label>${requirementFields(esc,r)}<h3 class="field-label">来源反馈（至少保留 1 条，最多 200 条）</h3><p class="footnote">保留的来源仍使用原快照；新增来源保存当前快照。取消勾选可移除关联，不删除原反馈。</p><div class="source-list">${choices.map(f=>`<div><label class="checkbox-label"><input type="checkbox" name="sources" value="${f.id}" ${f.existing?'checked':''}>${esc(f.content)}</label>${tag(f.existing?'已有来源快照':isReviewed(f)?'新增·已审核':'新增·未审核')}</div>`).join('')}</div><label class="checkbox-label"><input type="checkbox" name="acknowledge">若新增来源包含未审核建议，我已查看并确认关联。</label><div class="form-actions">${btn('close','取消','secondary')}<button type="submit" class="btn primary">保存需求与来源</button></div></form>`,true);
+    document.querySelector('#edit-requirement').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=new FormData(e.target);commit(p=>updateRequirement(p,id,r.revision,{...Object.fromEntries(data),title:data.get('title'),description:data.get('description'),priority:data.get('priority')},data.getAll('sources'),data.has('acknowledge')));modal.close();render();toast('需求内容与来源已保存。');});});
   }
   function topicEditor(id) {
     const p=projectOf(getState()),t=p.topics.find(t=>t.id===id);
@@ -776,6 +842,8 @@ const { assertTransition, normalizeTopicName } = __modules["domain/workflow.js"]
 const { initialState, projectOf, effective, isReviewed, classifyMock, reviewFeedback, createRequirement, saveState, loadState, uid, STORAGE_KEY } = __modules["demo-model.mjs"];
 const { setTopicStatus, matchesFeedback, recoverInterruptedRuns } = __modules["workspace.mjs"];
 const { createPanels } = __modules["panels.mjs"];
+const { createProductPanels, requirementFields } = __modules["product-panels.mjs"];
+const { REQUIREMENT_FIELDS, requirementExtras } = __modules["workspace.mjs"];
 const { CLOUD_API_BASE } = __modules["cloud-config.mjs"];
 
 const $ = (s, root = document) => root.querySelector(s);
@@ -806,6 +874,8 @@ let realAiRun = null;
 const apiBase = ['localhost','127.0.0.1'].includes(location.hostname) ? '.' : CLOUD_API_BASE;
 const modal = $('#modal');
 const panels=createPanels({getState:()=>state,setState:value=>{state=value;storageCorrupt=false;storageError='';selected.clear();},commit,openModal,modal,esc,btn,tag,render,toast,formError,isBusy:()=>Boolean(realAiRun?.confirmed)});
+
+const products=createProductPanels({getState:()=>state,commit,openModal,modal,esc,btn,render,toast,formError,go,download});
 
 async function refreshBackend() {
   try {
@@ -953,10 +1023,11 @@ function overview(p, pending, params) {
 }
 
 function feedbackPage(p, params) {
+  const fieldFilters=[['source','来源'],['platform','平台'],['appVersion','App 版本']].map(([key,label])=>{const values=[...new Set(p.feedback.map(f=>f[key]).filter(Boolean))].sort();const chosen=params.get(key);if(chosen&&!values.includes(chosen))values.unshift(chosen);return `<label>${label}<select data-filter="${key}" aria-label="${label}筛选"><option value="">全部${label}</option>${values.map(value=>`<option value="${esc(value)}" ${chosen===value?'selected':''}>${esc(value)}</option>`).join('')}</select></label>`;}).join('');
   const all = filtered(params), pages = Math.max(1, Math.ceil(all.length/20)); page = Math.min(page, pages);
   const visible = all.slice((page-1)*20, page*20);
   return `${p.feedback.some(f=>f.analysisStatus==='queued')?`<div class="notice-inline">还有反馈未分类；导入结果已保存，分类不会自动完成。${btn('simulate','运行本地关键词模拟','text')}</div>`:''}<div class="filterbar"><label class="search">${icon('search')}<input id="search" type="search" placeholder="搜索反馈原文，按 Enter 筛选" value="${esc(params.get('q') || '')}"></label><select data-filter="topic" aria-label="主题筛选"><option value="">全部主题</option>${p.topics.map(t=>`<option value="${t.id}" ${params.get('topic')===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select><select data-filter="review" aria-label="审核状态"><option value="">全部审核状态</option>${['pending','confirmed','modified','rejected'].map(s=>`<option value="${s}" ${params.get('review')===s?'selected':''}>${labels[s]}</option>`).join('')}</select>${btn('clear-filters','清除筛选','text')}</div>
-    ${dateFilters(params)}<div class="filterbar"><label>处理状态 <select data-filter="analysis" aria-label="分析状态"><option value="">全部分析状态</option>${[['queued','待处理'],['succeeded','分析成功'],['failed','分析失败']].map(([v,l])=>`<option value="${v}" ${params.get('analysis')===v?'selected':''}>${l}</option>`).join('')}</select></label>${btn('import-history','查看导入历史','text')}${btn('analysis-history','真实分析记录','text')}</div><div class="selection-bar"><span>共 ${all.length} 条反馈 · 已选 <b id="selected-count">${selected.size}</b> 条</span><div>${btn('select-visible','选择本页','text')}${btn('batch-confirm','批量确认','secondary')}${btn('selected-requirement','转为需求','secondary')}${btn('real-ai','真实 AI 分析','primary')}</div></div>
+    <div class="filterbar">${fieldFilters}${btn('manual-feedback','手工录入反馈','secondary')}${btn('export-feedback','导出当前筛选 CSV','text')}</div>${dateFilters(params)}<div class="filterbar"><label>处理状态 <select data-filter="analysis" aria-label="分析状态"><option value="">全部分析状态</option>${[['queued','待处理'],['succeeded','分析成功'],['failed','分析失败']].map(([v,l])=>`<option value="${v}" ${params.get('analysis')===v?'selected':''}>${l}</option>`).join('')}</select></label>${btn('import-history','查看导入历史','text')}${btn('analysis-history','真实分析记录','text')}</div><div class="selection-bar"><span>共 ${all.length} 条反馈 · 已选 <b id="selected-count">${selected.size}</b> 条</span><div>${btn('select-visible','选择本页','text')}${btn('batch-confirm','批量确认','secondary')}${btn('selected-requirement','转为需求','secondary')}${btn('real-ai','真实 AI 分析','primary')}</div></div>
     <section class="panel table-panel">${visible.length ? `<div class="table-scroll"><table><thead><tr><th class="check-cell"></th><th>用户反馈</th><th>主主题 / 情绪</th><th>审核状态</th><th></th></tr></thead><tbody>${visible.map(f=>`<tr><td><input type="checkbox" aria-label="选择反馈：${esc(f.content.slice(0,16))}" data-select="${f.id}" ${selected.has(f.id)?'checked':''}></td><td class="feedback-content"><button data-action="detail" data-id="${f.id}">${esc(f.content)}</button><small>${esc(f.source)} <span>·</span> ${esc(f.platform || '平台未知')} <span>·</span> ${esc(f.date || '时间未知')} <span>·</span> ${esc(f.origin)}</small>${f.lastAiError ? `<small class="form-error">最近分析失败：${esc(f.lastAiError)}</small>` : ''}</td><td>${effective(f) ? `<span>${esc(topicOf(p,f)?.name || '未归类')}</span><div>${tag(labels[f.sentiment],f.sentiment)}</div>` : '<span class="subtle">无有效分类</span>'}</td><td>${reviewTag(f)}</td><td><button class="icon-btn" aria-label="查看反馈详情" data-action="detail" data-id="${f.id}">${icon('arrow')}</button></td></tr>`).join('')}</tbody></table></div>` : empty('没有匹配的反馈', '尝试清除筛选，或导入一份新的 CSV。', btn('clear-filters','清除筛选'))}<div class="pagination"><span>第 ${page} / ${pages} 页</span><div>${btn('prev-page','上一页','secondary',page===1?'disabled':'')}${btn('next-page','下一页','secondary',page===pages?'disabled':'')}</div></div></section><p class="footnote">模拟分类和示例预设均需人工核查；已拒绝的结果不会重新作为有效分类展示。</p>`;
 }
 
@@ -971,6 +1042,7 @@ function requirementsPage(p) {
 }
 
 function openModal(title, body, wide=false) {
+  if(modal.open&&formDirty&&!window.confirm('有未保存的修改，确认放弃并打开新窗口？'))throw new Error('已保留当前编辑内容。');
   formDirty = false;
   modal.className = wide ? 'wide-modal' : '';
   modal.innerHTML = `<div class="modal-header"><h2 id="modal-title">${title}</h2><button class="close" data-action="close" aria-label="关闭">×</button></div><div class="modal-content">${body}<p id="form-error" class="form-error" role="alert"></p></div>`;
@@ -991,15 +1063,15 @@ function openRequirement(ids) {
   if(!fs.length) return toast('请先在反馈列表勾选来源反馈，或从主题创建需求。');
   if(fs.length>200 || fs.some(f=>!effective(f))) return toast('最多选择 200 条反馈，且必须有有效分类。');
   const revisionMap = fs.map(f=>[f.id,f.revision]);
-  openModal('从反馈创建需求', `<p class="subtle">保留 ${fs.length} 条来源反馈的当前快照，后续新增反馈不会自动加入。</p><form id="requirement-form"><label>需求标题<input name="title" required maxlength="120" placeholder="例如：Agent 应用代码前支持差异预览"></label><label>需求描述<textarea name="description" rows="3" maxlength="5000" placeholder="记录问题、预期行为，以及需要进一步验证的假设"></textarea></label><label>优先级<select name="priority"><option value="unset">未设置</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select></label><div class="source-list">${fs.map(f=>`<div>${tag(topicOf(p,f)?.name||'未归类')} ${reviewTag(f)}<p>${esc(f.content)}</p></div>`).join('')}</div>${fs.some(f=>!isReviewed(f))?'<label class="checkbox-label"><input name="acknowledge" type="checkbox" required>来源包含未审核建议，我已查看来源，仍创建需求。</label>':''}<div class="form-actions"><button class="btn secondary" type="button" data-action="close">取消</button><button class="btn primary" type="submit">创建并关联来源</button></div></form>`, true);
-  $('#requirement-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{if(revisionMap.some(([id,rev])=>p.feedback.find(f=>f.id===id)?.revision!==rev))throw new Error('来源已变化，请关闭后重新选择。');createRequirement(p,data,ids,Boolean(data.acknowledge));});modal.close();go('requirements');toast('需求已创建，来源快照已保留。');});});
+  openModal('从反馈创建需求', `<p class="subtle">保留 ${fs.length} 条来源反馈的当前快照，后续新增反馈不会自动加入。</p><form id="requirement-form"><label>需求标题<input name="title" required maxlength="120" placeholder="例如：Agent 应用代码前支持差异预览"></label><label>需求描述<textarea name="description" rows="3" maxlength="5000" placeholder="记录问题、预期行为，以及需要进一步验证的假设"></textarea></label><label>优先级<select name="priority"><option value="unset">未设置</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select></label>${requirementFields(esc)}<div class="source-list">${fs.map(f=>`<div>${tag(topicOf(p,f)?.name||'未归类')} ${reviewTag(f)}<p>${esc(f.content)}</p></div>`).join('')}</div>${fs.some(f=>!isReviewed(f))?'<label class="checkbox-label"><input name="acknowledge" type="checkbox" required>来源包含未审核建议，我已查看来源，仍创建需求。</label>':''}<div class="form-actions"><button class="btn secondary" type="button" data-action="close">取消</button><button class="btn primary" type="submit">创建并关联来源</button></div></form>`, true);
+  $('#requirement-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{if(revisionMap.some(([id,rev])=>p.feedback.find(f=>f.id===id)?.revision!==rev))throw new Error('来源已变化，请关闭后重新选择。');const req=createRequirement(p,data,ids,Boolean(data.acknowledge));Object.assign(req,requirementExtras(data));});modal.close();go('requirements');toast('需求已创建，来源快照已保留。');});});
 }
 
 function requirementDetail(id) {
   const p=projectOf(state), r=p.requirements.find(r=>r.id===id); if(!r) return toast('需求不存在。');
   const next={pending:['planned','rejected'],planned:['pending','in_progress','rejected'],in_progress:['planned','done'],done:['in_progress'],rejected:['pending']}[r.status];
-  openModal('需求详情',`<h3>${esc(r.title)}</h3><div class="detail-meta">${tag(reqLabels[r.status])}${tag('优先级：'+reqLabels[r.priority])}</div><p class="description-text">${esc(r.description||'暂无描述')}</p><h3 class="field-label">关联时来源快照 · ${r.sources.length} 条</h3><div class="source-list">${r.sources.map(s=>`<div>${tag(s.topicName)} ${tag(s.origin)}<p>${esc(s.content)}</p><small>创建时：${labels[s.review]} · 当前：${labels[p.feedback.find(f=>f.id===s.id)?.review]||'来源不可用'}</small></div>`).join('')}</div>${btn('edit-requirement','编辑内容与来源','secondary',`data-id="${r.id}"`)}<form id="status-form"><label>更新状态<select name="status"><option value="${r.status}">${reqLabels[r.status]}（当前）</option>${next.map(k=>`<option value="${k}">${reqLabels[k]}</option>`).join('')}</select></label>${['done','rejected'].includes(r.status)?'<label class="checkbox-label"><input type="checkbox" name="confirm">确认重新打开该需求</label>':''}<div class="form-actions"><button class="btn primary" type="submit">保存状态</button></div></form>`);
-  $('#status-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{const current=p.requirements.find(x=>x.id===id);if(current.revision!==r.revision)throw new Error('需求已变化，请重新打开。');assertTransition(current.status,data.status,Boolean(data.confirm));current.status=data.status;current.revision++;});modal.close();render();toast('需求状态已保存。');});});
+  openModal('需求详情',`<h3>${esc(r.title)}</h3><div class="detail-meta">${tag(reqLabels[r.status])}${tag('优先级：'+reqLabels[r.priority])}</div><p class="description-text">${esc(r.description||'暂无描述')}</p>${REQUIREMENT_FIELDS.map(([key,label])=>`<h3 class="field-label">${label}</h3><p class="description-text">${esc(r[key]||'尚未填写')}</p>`).join('')}<p>效果验证：${esc({not_checked:'尚未验证',checked:'已记录验证',inconclusive:'暂不能判断'}[r.verificationState||'not_checked'])}</p>${btn('export-requirement','导出需求 Markdown','text',`data-id="${r.id}"`)}<h3 class="field-label">关联时来源快照 · ${r.sources.length} 条</h3><div class="source-list">${r.sources.map(s=>`<div>${tag(s.topicName)} ${tag(s.origin)}<p>${esc(s.content)}</p><small>创建时：${labels[s.review]} · 当前：${labels[p.feedback.find(f=>f.id===s.id)?.review]||'来源不可用'}</small></div>`).join('')}</div>${btn('edit-requirement','编辑内容与来源','secondary',`data-id="${r.id}"`)}<form id="status-form"><label>更新状态<select name="status"><option value="${r.status}">${reqLabels[r.status]}（当前）</option>${next.map(k=>`<option value="${k}">${reqLabels[k]}</option>`).join('')}</select></label>${['done','rejected'].includes(r.status)?'<label class="checkbox-label"><input type="checkbox" name="confirm">确认重新打开该需求</label>':''}<div class="form-actions"><button class="btn primary" type="submit">保存状态</button></div></form>`);
+  $('#status-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{const current=p.requirements.find(x=>x.id===id);if(current.revision!==r.revision)throw new Error('需求已变化，请重新打开。');assertTransition(current.status,data.status,Boolean(data.confirm));if(data.status!==current.status&&data.status==='planned'&&!current.decisionReason?.trim())throw new Error('请先编辑需求，填写决策理由后再标记已规划。');if(data.status!==current.status&&data.status==='done'&&(!current.acceptanceCriteria?.trim()||!current.completionNote?.trim()))throw new Error('请先编辑需求，填写验收条件与完成说明。完成开发不等于效果已验证。');current.status=data.status;current.revision++;current.updatedAt=new Date().toISOString();});modal.close();render();toast('需求状态已保存。');});});
 }
 
 function openImport() {
@@ -1025,6 +1097,7 @@ function showPreview() {
 function confirmImport() {
   if(!importData || projectOf(state).id!==importData.projectId)throw new Error('项目已变化，请重新导入。');
   const rows=resolveImportRows(projectOf(state)), fresh=rows.filter(r=>r.outcome==='new');
+  if(projectOf(state).feedback.length+fresh.length>10000)throw new Error('导入后将超过本机项目 10,000 条反馈上限，请减少本批数据或使用新项目。');
   commit(p=>{for(const row of fresh){const v=row.values;p.feedback.unshift({id:uid(),content:v.content,source:v.source||'CSV 导入',platform:v.platform||'',date:v.date||null,feedbackAt:v.feedback_at||null,rating:v.rating,appVersion:v.app_version||'',topicId:null,sentiment:'uncertain',issueType:'uncertain',review:'pending',origin:'待分析',analysisStatus:'queued',revision:0,history:[],keys:row.keys});}p.imports.unshift({id:uid(),fileName:importData.fileName,fileHash:importData.fileHash,createdAt:new Date().toISOString(),rows:rows.map(r=>({recordNo:r.recordNo,outcome:r.outcome,errors:r.errors})),total:rows.length,imported:fresh.length,invalid:rows.filter(r=>r.outcome==='invalid').length,skipped:rows.filter(r=>['empty','duplicate'].includes(r.outcome)).length});});
   openModal('导入完成',`<div class="success-icon">${icon('check')}</div><h3>已新增 ${fresh.length} 条反馈</h3><p>总计 ${rows.length} 条 · 错误 ${rows.filter(r=>r.outcome==='invalid').length} 条 · 跳过 ${rows.filter(r=>['empty','duplicate'].includes(r.outcome)).length} 条</p><div class="notice-inline">导入完成不代表 AI 分析完成。你可以运行明确标记的本地关键词模拟；它不调用 DeepSeek，也不代表真实模型效果。</div><div class="form-actions">${btn('import-errors','导出错误报告','text')}${btn('show-imported','先查看反馈','secondary')}${btn('simulate','运行模拟分类','primary')}</div>`,true);
   render();
@@ -1049,6 +1122,9 @@ document.addEventListener('click',e=>{
     else if(action==='stop-real-ai'){if(realAiRun){realAiRun.stop=true;toast('将完成当前请求后停止，当前请求可能已产生费用。');}}
     else if(action==='about')about();
     else if(action==='import')openImport();
+    else if(action==='manual-feedback')products.manualFeedback();
+    else if(action==='export-requirement')products.exportRequirement(id);
+    else if(action==='export-feedback'){const rows=filtered();if(!rows.length)throw new Error('当前筛选没有反馈可导出。');const headers=['反馈原文','来源','平台','App 版本','反馈日期','主主题','情绪','问题类型','分析状态','审核状态','分析来源'];download('insightflow-feedback.csv','\uFEFF'+[headers,...rows.map(f=>[f.content,f.source,f.platform,f.appVersion,f.date,topicOf(p,f)?.name||'',labels[f.sentiment],labels[f.issueType],f.analysisStatus,labels[f.review],f.origin])].map(row=>row.map(escapeCsvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');toast(`已导出当前筛选的 ${rows.length} 条反馈。`);}
     else if(action==='detail')openDetail(id);
     else if(action==='nav-topics')go('topics');
     else if(action==='nav-feedback')go('feedback');
@@ -1110,7 +1186,7 @@ modal.addEventListener('close',()=>{formDirty=false;if(realAiRun&&!realAiRun.con
 window.addEventListener('beforeunload',e=>{if((modal.open&&formDirty)||realAiRun?.confirmed){e.preventDefault();e.returnValue='';}});
 window.addEventListener('pagehide',()=>{if(realAiRun?.confirmed){try{commit((_p,s)=>{const log=s.projects.find(p=>p.id===realAiRun.projectId)?.analysisRuns.find(r=>r.id===realAiRun.journalId);if(log){log.status='interrupted';for(const i of log.items){if(i.status==='running')i.status='unknown';else if(i.status==='queued')i.status='not_started';}}});}catch{}}});
 setInterval(()=>{if(!realAiRun?.confirmed&&!storageCorrupt){const next=structuredClone(state);if(recoverInterruptedRuns(next)){try{saveState(localStorage,next);state=next;render();}catch(e){toast(e.message);}}}},30_000);
-window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){try{state=loadState(localStorage);selected.clear();modal.close();render();toast('检测到另一标签页的数据变化，已刷新。');}catch(error){storageError=error.message;storageCorrupt=true;render();}}});
+window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){try{state=loadState(localStorage);selected.clear();if(modal.open&&formDirty){render();formError(new Error('另一标签页已更新数据。当前草稿保留；保存时若发生冲突，请复制草稿后重新打开。'));}else{modal.close();render();toast('检测到另一标签页的数据变化，已刷新。');}}catch(error){storageError=error.message;storageCorrupt=true;render();}}});
 render();
 refreshBackend().then(render);
 
