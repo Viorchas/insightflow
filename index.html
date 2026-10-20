@@ -31,6 +31,10 @@ dialog.guided-tour::backdrop{background:transparent}.tour-shade{position:fixed;b
 @media(max-width:650px){.tour-card{padding:17px 19px}.tour-card h2{font-size:17px;margin:12px 0 9px}.tour-card p{font-size:12px;line-height:1.8}.tour-card .tour-note{font-size:10px}.tour-actions{margin-top:12px}}
 
 dialog.guided-tour::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
+
+/* First-visit recommendation and persistent outlined tour entry. */
+.tour-entry{position:relative;display:inline-flex;flex-shrink:0}.top-actions .tour-launch{display:inline-flex;align-items:center;gap:7px;border:1px solid #75915e;border-radius:7px;background:#eef5e3;color:#365733;padding:8px 13px;font-size:12px;font-weight:600;box-shadow:0 1px 3px #264b3910}.top-actions .tour-launch:hover{border-color:#486c38;background:#e1edcd}.top-actions .tour-launch:focus-visible{outline:3px solid #b7ce8a;outline-offset:3px}.tour-launch .icon{width:15px;height:15px}.tour-recommendation{position:absolute;top:calc(100% + 13px);right:0;width:320px;max-width:calc(100vw - 34px);padding:18px 20px;background:#fffef8;border:1px solid #c9d9b4;border-radius:10px;box-shadow:0 9px 30px #233e2929;z-index:90;box-sizing:border-box;white-space:normal}.tour-recommendation::before{content:'';position:absolute;top:-6px;right:28px;width:10px;height:10px;transform:rotate(45deg);background:#fffef8;border-top:1px solid #c9d9b4;border-left:1px solid #c9d9b4}.tour-recommendation strong{font-size:13px;color:#375734;display:block;padding-right:14px}.tour-recommendation p{font-size:12px;color:#67775b;line-height:1.9;margin:10px 0 13px}.tour-recommendation>div{display:flex;gap:12px;align-items:center}.tour-recommendation .btn{font-size:11px;padding:7px 12px}.recommendation-close{position:absolute;right:9px;top:8px;width:26px;height:26px;border:0;background:transparent;border-radius:4px;font-size:20px;line-height:1;color:#7c8c6c;cursor:pointer}.recommendation-close:hover{background:#edf2e6}
+@media(max-width:650px){.top-actions .tour-launch{padding:7px 10px;font-size:11px}.tour-recommendation{padding:16px;max-width:calc(100vw - 34px)}.top-actions .tour-recommendation .btn{font-size:11px}}
 </style>
 </head>
 <body>
@@ -732,26 +736,12 @@ function mergeBackup(current, backup) {
 return {REQUIREMENT_FIELDS,requirementExtras,renameTopic,setTopicStatus,updateRequirement,matchesFeedback,recoverInterruptedRuns,validateBackup,mergeBackup};
 })();
 __modules["experience.mjs"] = (()=>{
-const { effective, isReviewed } = __modules["demo-model.mjs"];
-
-const GUIDE_KEY='insightflow-guide-v1';
-let memory={};
-try{const saved=JSON.parse(localStorage.getItem(GUIDE_KEY)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))memory=saved;}catch{}
-function guideState(projectId){return memory[projectId]||{};}
-function markGuide(projectId,changes){memory[projectId]={...guideState(projectId),...changes};try{localStorage.setItem(GUIDE_KEY,JSON.stringify(memory));}catch{/* Optional guide preferences must not block business data. */}}
-
-function guideCard(project,esc,btn){
-  const g=guideState(project.id);
-  if(g.hidden)return '';
-  if(!project.feedback.length)return `<section class="journey-card" aria-label="空项目开始指引"><div class="journey-head"><div><span class="journey-eyebrow">从第一条反馈开始</span><h2>先带进原文，再决定如何整理。</h2></div>${btn('guide-skip','暂时收起','text')}</div><p>数据保存在当前浏览器。录入或导入不会自动调用 AI；你可以先查看原文，再选择关键词模拟或真实分析。</p><div class="journey-actions">${btn('manual-feedback','手工录入第一条','primary')}${btn('import','导入自己的 CSV','secondary')}${btn('guide-sample-csv','导入合成示例 CSV','secondary')}</div></section>`;
-  const reviewed=project.feedback.find(f=>f.id===g.reviewedId&&isReviewed(f)&&effective(f));
-  const steps=[
-    ['01','探索数据与范围','查看来源与指标口径，不把合成反馈当作真实调研。','guide-explore','查看概览',g.explored],
-    ['02','核查一条反馈','对照原文、摘要和分类，保存一次人工判断。','guide-review','核查一条反馈',Boolean(reviewed)],
-    ['03','创建带来源的需求','先记录问题和来源，决策与验收可稍后补充。','guide-requirement','创建关联需求',g.requirementCreated],
-  ];
-  return `<section class="journey-card" aria-label="上手路线"><div class="journey-head"><div><span class="journey-eyebrow">用一条反馈走完流程</span><h2>探索 → 核查 → 形成需求</h2></div>${btn('guide-skip','跳过指引','text')}</div><div class="journey-steps">${steps.map(([n,title,desc,action,label,done])=>`<div class="journey-step"><span>${done?'✓':n}</span><div><h3>${title}</h3><p>${desc}</p>${btn(action,label,'text',action==='guide-requirement'&&!reviewed?'disabled':'')}</div></div>`).join('')}</div><p class="footnote">${g.requirementCreated?'本机已完成一次审核到需求的操作，可收起指引。':'无需调用 AI 也能完成这条路线；示例预设分类仍需人工核查。'} 本指引进度仅记录你的操作，不代表实际产品成果。</p></section>`;
-}
+const INTRO_KEY='insightflow-tour-intro-v1';
+let recommendationVisible=true;
+try{recommendationVisible=localStorage.getItem(INTRO_KEY)!=='seen';if(recommendationVisible)localStorage.setItem(INTRO_KEY,'seen');}catch{/* Keep optional hints usable without browser storage. */}
+function dismissTourRecommendation(){recommendationVisible=false;}
+function tourRecommendation(btn){return recommendationVisible?`<aside class="tour-recommendation" aria-label="首次使用提示"><button type="button" class="recommendation-close" data-action="dismiss-tour-recommendation" aria-label="关闭使用提示">×</button><strong>第一次来？从使用指引开始</strong><p>点击右上角的“使用指引”，用 8 步了解核心操作。可随时关闭，无需跟着完成。</p><div>${btn('start-tour','开始指引','primary')}${btn('dismiss-tour-recommendation','知道了','text')}</div></aside>`:'';}
+function emptyProjectStart(project,btn){if(project.feedback.length)return '';return `<section class="journey-card" aria-label="空项目开始指引"><div class="journey-head"><div><span class="journey-eyebrow">从第一条反馈开始</span><h2>先带进原文，再决定如何整理。</h2></div></div><p>数据保存在当前浏览器。录入或导入不会自动调用 AI；你可以先查看原文，再选择关键词模拟或真实分析。</p><div class="journey-actions">${btn('manual-feedback','手工录入第一条','primary')}${btn('import','导入自己的 CSV','secondary')}${btn('guide-sample-csv','导入合成示例 CSV','secondary')}</div></section>`;}
 
 function sourceSummary(feedback,esc){
   const synthetic=feedback.filter(f=>f.dataKind==='synthetic'||f.seedId||f.origin==='示例预设').length;
@@ -776,7 +766,7 @@ function aiOperationStatus(project,backend,selected,esc,btn){
   return `<div class="ai-operation-head"><strong>真实 AI：${ready?'已连接并启用':'暂未连接或启用'}</strong>${btn('ai-settings','查看连接与限制','text')}</div><p>已选 <b>${items.length}</b> 条 · 单次最多 ${max} 条${backend.mode==='cloud'?'、每条 1,500 字符':''}。${over?'所选正文超过限制，不会截断发送。':items.length>max?'请减少选择后提交。':'提交前还会展示原文并要求确认。'}</p>${run?`<p>最近一轮：${run.items.filter(i=>i.status==='succeeded').length} 条已保存，${run.items.filter(i=>i.status==='failed').length} 条失败，${run.items.filter(i=>i.status==='unknown').length} 条结果未知。${btn('analysis-history','查看记录与原因','text')}</p>`:''}<details><summary>额度和失败后如何处理</summary><p>${backend.mode==='cloud'?'当前限制：每个 IP 每天 3 次、全站每天 10 次、累计 20 次后暂停；这是次数上限，不是账户余额。剩余名额暂未提供实时查询。':'本地分析也会消耗你的 DeepSeek 额度。'} 连接就绪不表示一定还有额度。失败或超时可能已被供应商处理，也会占体验名额；不会自动重试。先查看记录和原因，结果未知时不要连续重发。</p><p>关键词模拟不调用模型、不代表真实 AI 输出；真实分析发送所选脱敏正文到服务端与 DeepSeek，可能产生费用。${esc('打开页面、筛选和查看结果不会发起真实分析。')}</p></details>`;
 }
 
-return {guideState,markGuide,guideCard,sourceSummary,chartNote,aiOperationStatus};
+return {dismissTourRecommendation,tourRecommendation,emptyProjectStart,sourceSummary,chartNote,aiOperationStatus};
 })();
 __modules["guided-tour.mjs"] = (()=>{
 const STEPS = [
@@ -1012,7 +1002,7 @@ const { createProductPanels, requirementFields } = __modules["product-panels.mjs
 const { REQUIREMENT_FIELDS, requirementExtras } = __modules["workspace.mjs"];
 const { CLOUD_API_BASE } = __modules["cloud-config.mjs"];
 const { createGuidedTour } = __modules["guided-tour.mjs"];
-const { guideCard, guideState, markGuide, sourceSummary, chartNote, aiOperationStatus } = __modules["experience.mjs"];
+const { emptyProjectStart, tourRecommendation, dismissTourRecommendation, sourceSummary, chartNote, aiOperationStatus } = __modules["experience.mjs"];
 
 const $ = (s, root = document) => root.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1162,10 +1152,10 @@ function render() {
     <nav>${nav.map(([key, ico, title]) => `<a href="#${key}" class="nav-item ${name === key ? 'active' : ''}">${icon(ico)}${title}${key === 'feedback' ? `<small>${p.feedback.length}</small>` : key === 'requirements' ? `<small>${p.requirements.length}</small>` : ''}</a>`).join('')}</nav>
     <button class="new-project" data-action="new-project">${icon('plus')} 创建新项目</button>
     <div class="sidebar-bottom"><div class="demo-card"><span class="live-dot"></span> 公开交互演示<p>示例数据 · 本机保存<br>${backend.configured ? '真实分析需确认 · 可能计费' : '真实 AI 暂未连接或启用'}</p>${btn('about', '了解演示模式 '+icon('arrow'), 'text')}</div><div class="profile"><span class="avatar">访</span><div>访客体验<small>无需注册，即刻探索</small></div></div></div></aside>
-    <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}${btn('guide-show','上手路线','text')}${btn('start-tour','使用指引','text')}</div></header>
+    <div class="main"><header class="topbar"><div><span class="breadcrumb">工作台</span><span class="slash">/</span><strong>${nav.find(n => n[0] === name)[2]}</strong></div><div class="top-actions"><span class="local-note"><i></i>仅存当前浏览器</span>${btn('ai-settings', backend.configured ? 'AI 已就绪' : 'AI 配置', 'text')}${btn('restore-backup', '恢复备份', 'text')}${btn('about', '演示说明', 'text')}<div class="tour-entry">${btn('start-tour',icon('spark')+'使用指引','secondary tour-launch')}${tourRecommendation(btn)}</div></div></header>
     <div class="content">${storageError ? `<div class="alert">${esc(storageError)} ${btn('backup', '导出原始备份', 'text')} ${btn('reset', '重置演示', 'text')}</div>` : ''}
     <div class="page-heading"><div><div class="eyebrow">${esc(p.appName)} <span> / </span> FEEDBACK WORKSPACE</div><h1>${{ overview: '让反馈，成为下一步。', feedback: '每条反馈，都有迹可循。', topics: '从零散声音，到共性问题。', requirements: '让洞察，走向行动。' }[name]}</h1><p>${{ overview: '发现用户关注的问题，从原文证据出发，做出有依据的产品判断。', feedback: '阅读原文、核查分析建议，将有价值的反馈关联到需求。', topics: '查看相似反馈的聚合结果，确认主题后再用于产品决策。', requirements: '记录产品判断，保留来源证据，持续跟进处理状态。' }[name]}</p></div>${name === 'requirements' ? btn('new-requirement', icon('plus')+'创建需求', 'primary') : btn('import', icon('upload')+'导入反馈', 'primary')}</div>
-    ${guideCard(p,esc,btn)}${p.feedback.length?`<section class="data-context" aria-label="当前数据与分析来源"><strong>${p.isSample?'当前为演示项目，包含合成反馈':'当前为本机项目，数据真实性需核实'}</strong>${sourceSummary(p.feedback,esc)}</section>`:''}
+    ${emptyProjectStart(p,btn)}${p.feedback.length?`<section class="data-context" aria-label="当前数据与分析来源"><strong>${p.isSample?'当前为演示项目，包含合成反馈':'当前为本机项目，数据真实性需核实'}</strong>${sourceSummary(p.feedback,esc)}</section>`:''}
     ${name === 'overview' ? overview(p, pending, params) : name === 'feedback' ? feedbackPage(p, params) : name === 'topics' ? topicsPage(p) : requirementsPage(p)}
     <footer><span>InsightFlow <b>·</b> 从用户声音，到产品行动</span><button data-action="reset" class="link">重置演示数据</button></footer></div></div>`;
   tour.refresh();
@@ -1233,7 +1223,7 @@ function updateFilter(key,value) { const {name,params}=route();value ? params.se
 function openDetail(id) {
   const p=projectOf(state), f=p.feedback.find(f=>f.id===id); if(!f) return toast('反馈不存在。');
   openModal('反馈详情', `<div class="detail-meta">${tag(f.origin)}${reviewTag(f)}<span>${esc(f.date||'时间未知')}</span></div><h3 class="field-label">原始反馈</h3><blockquote class="original">${esc(f.content)}</blockquote><p class="footnote">${esc(f.source)} · ${esc(f.platform||'平台未知')} · 当前修订 ${f.revision}</p>${f.summary ? `<h3 class="field-label">AI 摘要与证据</h3><p>${esc(f.summary)}</p><blockquote class="original">${esc(f.evidenceQuote || '')}</blockquote><p class="footnote">${esc((f.reviewReasons || []).join('、'))} · 已保留 ${(f.aiVersions || []).length} 个真实分析版本</p>` : ''}${f.lastAiError ? `<p class="form-error">最近分析失败：${esc(f.lastAiError)}</p>` : ''}<div class="notice-inline">${icon('spark')} ${esc(f.origin)}结果，请以原文为依据审核。</div><form id="review-form"><label>摘要<textarea name="summary" rows="3" maxlength="200" required>${esc(f.summary||[...f.content].slice(0,200).join(''))}</textarea></label><label>主主题<select name="topicId">${p.topics.map(t=>`<option value="${t.id}" ${t.id===f.topicId?'selected':''}>${esc(t.name)}${t.status==='candidate'?'（候选，需先确认）':''}</option>`).join('')}</select></label><div class="form-grid"><label>情绪<select name="sentiment">${['positive','neutral','negative','uncertain'].map(k=>`<option value="${k}" ${k===f.sentiment?'selected':''}>${labels[k]}</option>`).join('')}</select></label><label>问题类型<select name="issueType">${['feature_request','bug','usability','performance','other','uncertain'].map(k=>`<option value="${k}" ${k===f.issueType?'selected':''}>${labels[k]}</option>`).join('')}</select></label></div><div class="form-actions"><button class="btn text danger" type="button" data-action="reject-feedback" data-id="${f.id}" data-revision="${f.revision}">拒绝分类</button><button class="btn primary" type="submit">${icon('check')}保存审核</button></div></form><p class="footnote">已记录 ${f.history.length} 次审核变更。拒绝后保留原文，并从分类统计中移除。</p>`);
-  $('#review-form').addEventListener('submit', e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));const changed=['topicId','sentiment','issueType','summary'].some(k=>data[k]!==f[k]);commit(p=>reviewFeedback(p,id,f.revision,changed?'modified':'confirmed',data));markGuide(p.id,{reviewedId:id});modal.close();render();toast('审核已保存到当前浏览器。');});});
+  $('#review-form').addEventListener('submit', e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));const changed=['topicId','sentiment','issueType','summary'].some(k=>data[k]!==f[k]);commit(p=>reviewFeedback(p,id,f.revision,changed?'modified':'confirmed',data));modal.close();render();toast('审核已保存到当前浏览器。');});});
 }
 
 function openRequirement(ids) {
@@ -1242,7 +1232,7 @@ function openRequirement(ids) {
   if(fs.length>200 || fs.some(f=>!effective(f))) return toast('最多选择 200 条反馈，且必须有有效分类。');
   const revisionMap = fs.map(f=>[f.id,f.revision]);
   openModal('从反馈创建需求', `<p class="subtle">保留 ${fs.length} 条来源反馈的当前快照，后续新增反馈不会自动加入。</p><form id="requirement-form"><label>需求标题<input name="title" required maxlength="120" placeholder="例如：Agent 应用代码前支持差异预览"></label><label>需求描述<textarea name="description" rows="3" maxlength="5000" placeholder="记录问题、预期行为，以及需要进一步验证的假设"></textarea></label><label>优先级<select name="priority"><option value="unset">未设置</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select></label>${requirementFields(esc)}<div class="source-list">${fs.map(f=>`<div>${tag(topicOf(p,f)?.name||'未归类')} ${reviewTag(f)}<p>${esc(f.content)}</p></div>`).join('')}</div>${fs.some(f=>!isReviewed(f))?'<label class="checkbox-label"><input name="acknowledge" type="checkbox" required>来源包含未审核建议，我已查看来源，仍创建需求。</label>':''}<div class="form-actions"><button class="btn secondary" type="button" data-action="close">取消</button><button class="btn primary" type="submit">创建并关联来源</button></div></form>`, true);
-  $('#requirement-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{if(revisionMap.some(([id,rev])=>p.feedback.find(f=>f.id===id)?.revision!==rev))throw new Error('来源已变化，请关闭后重新选择。');const req=createRequirement(p,data,ids,Boolean(data.acknowledge));Object.assign(req,requirementExtras(data));});markGuide(projectOf(state).id,{requirementCreated:true});modal.close();go('requirements');toast('需求已创建，来源快照已保留。');});});
+  $('#requirement-form').addEventListener('submit',e=>{e.preventDefault();attempt(()=>{const data=Object.fromEntries(new FormData(e.target));commit(p=>{if(revisionMap.some(([id,rev])=>p.feedback.find(f=>f.id===id)?.revision!==rev))throw new Error('来源已变化，请关闭后重新选择。');const req=createRequirement(p,data,ids,Boolean(data.acknowledge));Object.assign(req,requirementExtras(data));});modal.close();go('requirements');toast('需求已创建，来源快照已保留。');});});
 }
 
 function requirementDetail(id) {
@@ -1310,16 +1300,8 @@ document.addEventListener('click',e=>{
     else if(action==='confirm-real-ai')runRealAi().catch(formError);
     else if(action==='stop-real-ai'){if(realAiRun){realAiRun.stop=true;toast('将完成当前请求后停止，当前请求可能已产生费用。');}}
     else if(action==='about')about();
-    else if(action==='start-tour')tour.start();
-    else if(action==='guide-show'){markGuide(p.id,{hidden:false});render();}
-    else if(action==='guide-skip'){markGuide(p.id,{hidden:true});render();}
-    else if(action==='guide-explore'){markGuide(p.id,{explored:true});go('overview');}
-    else if(action==='guide-review'){
-      const item=p.feedback.find(f=>effective(f)&&f.review==='pending'&&topicOf(p,f)?.status==='confirmed')||p.feedback.find(f=>effective(f)&&topicOf(p,f)?.status==='confirmed');
-      if(!item){toast('请先录入或导入反馈，并完成一次分类；候选主题需先确认。');go('feedback');}
-      else{go('feedback',{q:item.content});openDetail(item.id);}
-    }
-    else if(action==='guide-requirement'){const item=p.feedback.find(f=>f.id===guideState(p.id).reviewedId);if(!item||!isReviewed(item)||!effective(item))throw new Error('请先核查并保存一条反馈，再从它创建需求。');openRequirement([item.id]);}
+    else if(action==='start-tour'){dismissTourRecommendation();render();tour.start();}
+    else if(action==='dismiss-tour-recommendation'){dismissTourRecommendation();render();}
     else if(action==='guide-sample-csv')openSampleImport();
     else if(action==='import')openImport();
     else if(action==='manual-feedback')products.manualFeedback();
